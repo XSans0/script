@@ -22,7 +22,7 @@ source helper
 
 gen_toolchain
 
-send_msg "<b>⏳ Start building:</b> <code>${KERNELNAME}-${LOCALVERSION}</code>%0A<b>Device: tulip</b>%0A<b>Linux version:</b> <code>$(make kernelversion)</code>%0A<b>Compiler:</b> <code>$KBUILD_COMPILER_STRING</code>"
+send_msg "<b>⏳ Start building:</b> <code>${KERNELNAME}-${LOCALVERSION}</code>%0A<b>Device:</b> <code>$DEVICES</code>%0A<b>Linux version:</b> <code>$(make kernelversion)</code>%0A<b>Compiler:</b> <code>$KBUILD_COMPILER_STRING</code>"
 
 START=$(date +"%s")
 
