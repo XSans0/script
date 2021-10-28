@@ -18,15 +18,17 @@ fi
 
 export SOURCE
 
-# Telegram
-TELEGRAM=Telegram/telegram
+# Telegram Env
+export TOKEN=$TELEGRAM_TOKEN
+export BOT_MSG_URL="https://api.telegram.org/bot$TOKEN/sendMessage"
+export BOT_BUILD_URL="https://api.telegram.org/bot$TOKEN/sendDocument"
+
 sendInfo() {
-  "${TELEGRAM}" -c "${CHANNEL_ID}" -H -D \
-      "$(
-          for POST in "${@}"; do
-              echo "${POST}"
-          done
-      )"
+	curl -s -X POST "$BOT_MSG_URL" -d chat_id="$CHANNEL_ID" \
+	-d "disable_web_page_preview=true" \
+	-d "parse_mode=html" \
+	-d text="$1"
+
 }
 
 sendInfo  "<b>==================================</b>" \
