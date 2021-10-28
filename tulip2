@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Docker Kernel Build Script
+
+# Cloning some resource
+if [[ "$*" =~ "stable" ]]; then
+	git clone --depth=1 https://github.com/XSans02/kernel_sdm660 -b eas kernel
+	cd kernel || exit
+elif [[ "$*" =~ "beta" ]]; then
+	git clone --depth=1 https://github.com/XSans02/kernel_sdm660 -b eas-test kernel
+	cd kernel || exit
+fi
+
+if [[ "$*" =~ "clang" ]]; then
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
+elif [[ "$*" =~ "gcc" ]]; then
+  git clone --depth=1 https://github.com/chips-project/aarch64-elf arm64
+  git clone --depth=1 https://github.com/chips-project/arm-eabi arm32
+fi
+
+git clone --depth=1 https://github.com/XSans02/telegram.sh Telegram
+git clone --depth=1 https://github.com/XSans02/AnyKernel3 anykernel
+
+# Telegram
+TELEGRAM=Telegram/telegram
+sendInfo() {
+  "${TELEGRAM}" -c "${CHANNEL_ID}" -H \
+      "$(
+          for POST in "${@}"; do
+              echo "${POST}"
+          done
+      )"
+}
+
+sendInfo	"<b>==================================</b>" \
+        	"<b>Start Building :</b> <code>Waifu Kernel</code>" \
+                "<b>Linux Version :</> <code>$(make kernelversion)</code>" \
+        	"<b>Source Branch :</b> <code>$(git rev-parse --abbrev-ref HEAD)</code>" \
+        	"<b>==================================</b>"
