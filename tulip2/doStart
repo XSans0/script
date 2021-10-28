@@ -33,6 +33,5 @@ sendInfo() {
 
 sendInfo	"<b>==================================</b>" \
         	"<b>Start Building :</b> <code>Waifu Kernel</code>" \
-                "<b>Linux Version :</> <code>$(make kernelversion)</code>" \
         	"<b>Source Branch :</b> <code>$(git rev-parse --abbrev-ref HEAD)</code>" \
         	"<b>==================================</b>"
