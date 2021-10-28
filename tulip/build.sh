@@ -1,4 +1,7 @@
 #!/bin/bash
+# Don't change everything after this
+
+
 
 export KERNELNAME=Waifu-EiChan-EAS
 
@@ -12,11 +15,9 @@ export TOOLCHAIN=clang
 
 export DEVICES=tulip
 
-export CI_ID=${TELEGRAM_ID}
+export CI_ID=-1001469789020
 
-export BOT_TOKEN=${BOT_TOKEN}
-
-export GROUP_ID=none
+export BOT_TOKEN=2024574930:AAGyq7vgjt7EhIdQxizYD_YkKjPp2JvAiAw
 
 source helper
 
