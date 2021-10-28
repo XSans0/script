@@ -60,24 +60,17 @@ export SUBARCH=arm64
 export KBUILD_BUILD_USER="XSans02"
 export KBUILD_BUILD_HOST="CircleCI"
 
-# Telegram Directory
-TELEGRAM=Telegram/telegram
+# Telegram Env
+export TOKEN=$TELEGRAM_TOKEN
+export BOT_MSG_URL="https://api.telegram.org/bot$TOKEN/sendMessage"
+export BOT_BUILD_URL="https://api.telegram.org/bot$TOKEN/sendDocument"
 
-# Push Info Kernel to Telegram
-sendInfo() {
-  "${TELEGRAM}" -c "${CHANNEL_ID}" -H \
-      "$(
-          for POST in "${@}"; do
-              echo "${POST}"
-          done
-      )"
-}
-
-# Push Zip Kernel to Telegram
 sendKernel() {
-  "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
-  -c "${CHANNEL_ID}" -H \
-      "# <code>$DEVICE-$CONFIGVERSION</code> # <code>md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> # <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
+	curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
+	-F chat_id="$CHANNEL_ID"  \
+	-F "disable_web_page_preview=true" \
+	-F "parse_mode=html" \
+	-F caption="$3 | <code>"$KERNEL_NAME"-"$DEVICE"_"$CONFIGVERSION"_"$LOCALVERSION"</code> # <code>md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> # <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
 }
 
 # Start Count
