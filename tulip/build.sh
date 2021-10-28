@@ -1,7 +1,10 @@
 #!/bin/bash
 # Don't change everything after this
 
-
+if [[ "$*" =~ "stable" ]]; then
+   git clone --depth=1 https://github.com/XSans02/kernel_sdm660 -b eas kernel
+   cd kernel || exit
+fi
 
 export KERNELNAME=Waifu-EiChan-EAS
 
