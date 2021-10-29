@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Cloning some resource
+# Cloning kernel source
 if [[ "$*" =~ "stable" ]]; then
   git clone --depth=1 https://github.com/XSans02/kernel_sdm660.git -b eas kernel
   cd kernel || exit
@@ -16,6 +16,13 @@ elif [[ "$*" =~ "newcam" ]]; then
     CAMVERSION=newcam
 fi
 
+# Setup overclock version
+if [[ "$*" =~ "oc" ]]; then
+     wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/oc.patch
+     wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/em.patch
+fi
+
+# Cloning toolchain
 if [[ "$*" =~ "clang" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
 elif [[ "$*" =~ "gcc" ]]; then
@@ -23,6 +30,7 @@ elif [[ "$*" =~ "gcc" ]]; then
   git clone --depth=1 https://github.com/chips-project/arm-eabi arm32
 fi
 
+# Clang setup
 if [[ "$*" =~ "clang" ]]; then
   TOOLCHAIN_DIR="clang"
   CCV="$("$TOOLCHAIN_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
@@ -89,6 +97,11 @@ sendInfo  "<b>=================================</b>" \
 
 # Start Count
 BUILD_START=$(date +"%s")
+
+if [[ "$*" =~ "oc" ]]; then
+    git apply oc.patch
+    git apply em.patch
+fi
 
 make O=out "$DEVICE"-"$CAMVERSION"_defconfig
 # Start Compile
