@@ -39,6 +39,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git AnyKernel
 # Setup Environtment
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
+LOCALVERSION=Rev1.1
 DEVICE=tulip
 AK3_DIR=$KERNEL_DIR/AnyKernel/
 export TZ="Asia/Jakarta"
@@ -81,6 +82,8 @@ sendKernel() {
 
 sendInfo  "<b>=================================</b>" \
           "<b>Start Building :</b> <code>Waifu Kernel</code>" \
+          "<b>Device :</b> <code>$DEVICE</code>" \
+          "<b>Kernel Version :<b> <code>$CAMVERSION-$LOCALVERSION</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
           "<b>=================================</b>"
 
@@ -117,18 +120,14 @@ cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 if [[ "$*" =~ "beta" ]]; then
-  zip -r9 Waifu-EiChan-EAS-"$DEVICE"_"$CAMVERSION"_beta_"$ZIP_DATE".zip ./*
+  zip -r9 Waifu-EiChan-EAS-"$DEVICE"_"$CAMVERSION"_beta_"$LOCALVERSION"-"$ZIP_DATE".zip ./*
 else
-  zip -r9 Waifu-EiChan-EAS-"$DEVICE"_"$CAMVERSION"_"$ZIP_DATE".zip ./*
+  zip -r9 Waifu-EiChan-EAS-"$DEVICE"_"$CAMVERSION"_"$LOCALVERSION"-"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
 
 sendKernel
-
-rm -rf out/arch/arm64/boot/
-rm -rf out/.version
-rm -rf "$AK3_DIR"/*.zip
 
 sendInfo  "<b>======================================</b>" \
           "<b>Success Building :</b> <code>Waifu Kernel</code>" \
