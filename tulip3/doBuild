@@ -18,8 +18,6 @@ fi
 
 # Setup overclock version
 if [[ "$*" =~ "oc" ]]; then
-     wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/oc.patch
-     wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/em.patch
      LOCALVERSION=OC-Rev1.1
      export LOCALVERSION
 else
@@ -88,7 +86,7 @@ sendInfo() {
 sendKernel() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
-      "# <code>$DEVICE</code> # <code>md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> # <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
+      "<code>md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code>%0A<code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
 }
 
 sendInfo  "<b>=================================</b>" \
@@ -106,13 +104,20 @@ if [[ "$*" =~ "oc" ]]; then
     git apply em.patch
 fi
 
-make O=out "$DEVICE"-"$CAMVERSION"_defconfig
 # Start Compile
+make O=out "$DEVICE"-"$CAMVERSION"_defconfig
+
 if [[ "$*" =~ "clang" ]]; then
-  make -j"$(nproc --all)" O=out \
-          CC=clang \
-          CROSS_COMPILE=aarch64-linux-gnu- \
-          CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+make -j$(nproc --all) O=out \
+		ARCH=arm64 \
+		CC=clang \
+		AR=llvm-ar \
+		NM=llvm-nm \
+	        OBJCOPY=llvm-objcopy \
+		OBJDUMP=llvm-objdump \
+		STRIP=llvm-strip \
+		CROSS_COMPILE=aarch64-linux-gnu- \
+		CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 elif [[ "$*" =~ "gcc" ]]; then
   export CROSS_COMPILE="$KERNEL_DIR/arm64/bin/aarch64-elf-"
   export CROSS_COMPILE_ARM32="$KERNEL_DIR/arm32/bin/arm-eabi-"
@@ -121,7 +126,7 @@ fi
 
 # If build error
 if ! [ -a "$KERNEL_IMG" ]; then
-  sendInfo "<b>Failed building kernel for <code>$DEVICE</code> Please fix it...!</b>"
+  sendInfo "<b>Failed building kernel for</b> <code>$DEVICE</code> <b>Please fix it...!</b>"
   exit 1
 fi
 
