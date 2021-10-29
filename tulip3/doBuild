@@ -20,6 +20,11 @@ fi
 if [[ "$*" =~ "oc" ]]; then
      wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/oc.patch
      wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/em.patch
+     LOCALVERSION=OC-Rev1.1
+     export LOCALVERSION
+else
+     LOCALVERSION=Rev1.1
+     export LOCALVERSION
 fi
 
 # Cloning toolchain
@@ -47,7 +52,6 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git AnyKernel
 # Setup Environtment
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
-LOCALVERSION=Rev1.1
 DEVICE=tulip
 AK3_DIR=$KERNEL_DIR/AnyKernel/
 export TZ="Asia/Jakarta"
@@ -67,7 +71,6 @@ export ZIP_DATE
 export SOURCE
 export ARCH=arm64
 export SUBARCH=arm64
-export LOCALVERSION=Rev1.1
 export KBUILD_BUILD_USER="XSans02"
 export KBUILD_BUILD_HOST="CircleCI"
 
