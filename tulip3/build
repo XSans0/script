@@ -58,10 +58,10 @@ send_file(){
 
 	#Show the Checksum alongwith caption
 	curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
-	-F chat_id="$2"  \
+	-F chat_id="${CHANNEL_ID}"  \
 	-F "disable_web_page_preview=true" \
 	-F "parse_mode=html" \
-	-F caption="<b>✅ Build successfully!</b>%0A<b>Build took : </b><code>$((DIFF / 60)) minute and $((DIFF % 60)) second</code>%0A<b>Build date : </b><code>$DATE</code>%0A<b>MD5 Checksum : </b><code>$MD5CHECK</code>" "$CHATID"
+	-F caption="<b>✅ Build successfully!</b>%0A<b>Build took : </b><code>$((DIFF / 60)) minute and $((DIFF % 60)) second</code>%0A<b>Build date : </b><code>$DATE</code>%0A<b>MD5 Checksum : </b><code>$MD5CHECK</code>"
 }
 
 mkzip(){
