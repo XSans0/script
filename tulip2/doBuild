@@ -19,7 +19,7 @@ elif [[ "$*" =~ "newcam" ]]; then
 fi
 
 if [[ "$*" =~ "oc" ]]; then
-  VERSION=-OC
+  VERSION=OC-
 fi
 
 if [[ "$*" =~ "clang" ]]; then
@@ -46,7 +46,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION=$CAMVERSION-Rev1.2
+LOCALVERSION="$VERSION""$CAMVERSION"-Rev1.2
 DEVICE=tulip
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
@@ -95,6 +95,11 @@ sendInfo  "<b>======================================</b>" \
 # Start Count
 BUILD_START=$(date +"%s")
 
+if [[ "$*" =~ "oc" ]]; then
+  git apply oc.patch
+  git apply em.patch
+fi
+
 make O=out "$DEVICE"_defconfig
 # Start Compile
 if [[ "$*" =~ "clang" ]]; then
@@ -126,9 +131,9 @@ cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 if [[ "$*" =~ "beta" ]]; then
-  zip -r9 Waifu-EiChan-EAS-"$DEVICE""$VERSION"_beta_"$LOCALVERSION"-"$ZIP_DATE".zip ./*
+  zip -r9 Waifu-EiChan-EAS-"$DEVICE"_beta_"$LOCALVERSION"-"$ZIP_DATE".zip ./*
 else
-  zip -r9 Waifu-Eichan-EAS-"$DEVICE""$VERSION"-"$LOCALVERSION"-"$ZIP_DATE".zip ./*
+  zip -r9 Waifu-Eichan-EAS-"$DEVICE"-"$LOCALVERSION"-"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
