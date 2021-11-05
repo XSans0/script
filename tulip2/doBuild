@@ -4,7 +4,7 @@
 
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
-  git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/okta-10/mystic-beta.git -b Mystic-4.14 kernel
+  git clone --depth=1 https://github.com/XSans02/kernel_sdm660 -b test kernel
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   git clone --depth=1 https://github.com/XSans02/kernel_sdm660.git -b eas kernel
