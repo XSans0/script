@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Copyright (C) 2020-2021 Oktapra Amtono
 # Docker Kernel Build Script
 
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
+  BETA=beta-
   git clone --depth=1 https://github.com/XSans02/kernel_sdm660 -b test kernel
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
@@ -16,6 +16,7 @@ if [[ "$*" =~ "oldcam" ]]; then
   CAMVERSION=oldcam
 elif [[ "$*" =~ "newcam" ]]; then
   CAMVERSION=newcam
+  CONFIG=-newcam
 fi
 
 if [[ "$*" =~ "oc" ]]; then
@@ -46,7 +47,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION="$VERSION""$CAMVERSION"-Rev1.3
+LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
 DEVICE=tulip
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
@@ -100,7 +101,7 @@ if [[ "$*" =~ "oc" ]]; then
   git apply em.patch
 fi
 
-make O=out "$DEVICE"_defconfig
+make O=out "$DEVICE""$CONFIG"_defconfig
 # Start Compile
 if [[ "$*" =~ "clang" ]]; then
   make -j"$(nproc --all)" O=out \
@@ -131,9 +132,9 @@ cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 if [[ "$*" =~ "beta" ]]; then
-  zip -r9 Waifu-EiChan-EAS-"$DEVICE"_beta_"$LOCALVERSION"-"$ZIP_DATE".zip ./*
+  zip -r9 Waifu-EiChan-EAS-"$DEVICE"-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
 else
-  zip -r9 Waifu-Eichan-EAS-"$DEVICE"-"$LOCALVERSION"-"$ZIP_DATE".zip ./*
+  zip -r9 Waifu-Eichan-EAS-"$DEVICE"-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
