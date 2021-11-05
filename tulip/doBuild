@@ -21,10 +21,6 @@ elif [[ "$*" =~ "newcam" ]]; then
   CONFIG=-newcam
 fi
 
-if [[ "$*" =~ "oc" ]]; then
-  VERSION=Overclock-
-fi
-
 if [[ "$*" =~ "clang" ]]; then
   TC=clang
   git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
@@ -51,7 +47,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git ak3
 # Setup Environtment
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
+LOCALVERSION="$BETA""$CAMVERSION"-Rev1.3
 DEVICE=tulip
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
@@ -134,6 +130,11 @@ if [[ "$CAMVERSION" == "oldcam" ]]; then
    make_clean
    
    sendInfo "<b>Start building :</b> <code>Overclock version</code>"
+   
+   # Little Change Env
+   VERSION=OC-
+   LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
+   export LOCALVERSION
    
    git apply oc.patch
    
@@ -229,6 +230,11 @@ elif [[ "$CAMVERSION" == "newcam" ]]; then
    make_clean
    
    sendInfo "<b>Start building :</b> <code>Overclock version</code>"
+   
+   # Little Change Env
+   VERSION=OC-
+   LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
+   export LOCALVERSION
    
    git apply oc.patch
    
