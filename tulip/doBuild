@@ -82,9 +82,8 @@ sendKernel() {
 }
 
 make_clean(){
-    rm -rf out/arch/arm64/boot/
-    rm -rf out/.version
-    rm -rf "$AK3_DIR"/*.zip
+   rm -rf out
+   rm -rf "$AK3_DIR"/*.zip
 }
 
 
