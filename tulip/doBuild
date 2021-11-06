@@ -82,7 +82,9 @@ sendKernel() {
 }
 
 make_clean(){
-	rm -rf out
+    rm -rf out/arch/arm64/boot/
+    rm -rf out/.version
+    rm -rf "$AK3_DIR"/*.zip
 }
 
 
@@ -136,9 +138,8 @@ if [[ "$CAMVERSION" == "oldcam" ]]; then
    LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
    export LOCALVERSION
    
-   git apply oc.patch
-   
-   git apply em.patch
+   wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/oc2.patch
+   git apply oc2.patch
    
    make O=out "$DEVICE""$CONFIG"_defconfig
    # Start Compile
@@ -236,9 +237,8 @@ elif [[ "$CAMVERSION" == "newcam" ]]; then
    LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
    export LOCALVERSION
    
-   git apply oc.patch
-   
-   git apply em.patch
+   wget https://raw.githubusercontent.com/XSans02/CI_Script/main/tulip-patch/oc2.patch
+   git apply oc2.patch
    
    make O=out "$DEVICE""$CONFIG"_defconfig
    # Start Compile
@@ -259,6 +259,10 @@ elif [[ "$CAMVERSION" == "newcam" ]]; then
      exit 1
    fi
 
+   # End Count and Calculate Total Build Time
+   BUILD_END=$(date +"%s")
+   DIFF=$(( BUILD_END - BUILD_START ))
+
    LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
    # Make zip
@@ -275,10 +279,6 @@ elif [[ "$CAMVERSION" == "newcam" ]]; then
    cd "$KERNEL_DIR" || exit
 
    sendKernel
-
-   # End Count and Calculate Total Build Time
-   BUILD_END=$(date +"%s")
-   DIFF=$(( BUILD_END - BUILD_START ))
 
    sendInfo  "<b>Success Building :</b> <code>Waifu Kernel</code>" \
               "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
