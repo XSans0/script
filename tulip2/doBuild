@@ -4,11 +4,7 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   BETA=beta-
-  git clone --depth=1 https://github.com/XSans02/kernel_sdm660 -b test kernel
-  cd kernel || exit
-elif [[ "$*" =~ "beta2" ]]; then
-  BETA=beta-
-  git clone --depth=1 https://github.com/XSans02/halcyon_kernel_xiaomi_sdm660 -b eas-12-bpf kernel
+  git clone --depth=1 https://github.com/XSans02/halcyon_kernel_xiaomi_sdm660.git -b eas-12-bpf kernel
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   git clone --depth=1 https://github.com/XSans02/kernel_sdm660.git -b eas kernel
