@@ -77,9 +77,9 @@ sendInfo "<b>Start Building :</b> <code>Waifu Kernel</code>" \
 BUILD_START=$(date +"%s")
 
 # Start Compile
-make O=out "$DEVICE"_defconfig
+make O=out ARCH=arm64 "$DEVICE"_defconfig
 
-if [[ "$TC_DIR" =~ "clang" ]]; then
+if [[ "$TC_DIR" == "clang" ]]; then
   make -j"$(nproc --all)" O=out \
           ARCH=arm64 \
           SUBARCH=arm64 \
@@ -93,7 +93,7 @@ if [[ "$TC_DIR" =~ "clang" ]]; then
           STRIP=llvm-strip \
           LD=ld.lld \
           CLANG_TRIPLE=aarch64-linux-gnu-
-elif [[ "$TC_DIR" =~ "gcc" ]]; then
+elif [[ "$TC_DIR" == "gcc" ]]; then
   export CROSS_COMPILE="$KERNEL_DIR/arm64/bin/aarch64-elf-"
   export CROSS_COMPILE_ARM32="$KERNEL_DIR/arm32/bin/arm-eabi-"
   make -j"$(nproc --all)" O=out ARCH=arm64
