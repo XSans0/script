@@ -31,7 +31,7 @@ KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 LOCALVERSION=Rev1.1
 DEVICE=vayu
-KBUILD_BUILD_USER=XSans02
+KBUILD_BUILD_USER=XSans
 KBUILD_BUILD_HOST=CircleCI-Server
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
@@ -45,14 +45,14 @@ if [[ "$*" =~ "clang" ]]; then
   TC=clang
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 elif [[ "$*" =~ "gcc" ]]; then
   # Kernel & GCC setup
   TC=gcc
   GCC_DIR="$KERNEL_DIR"/arm64
   export PATH="$KERNEL_DIR/arm64:$KERNEL_DIR/arm32:$PATH"
-  KBUILD_COMPILER_STRING="("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
+  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 fi
 
