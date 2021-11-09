@@ -14,8 +14,8 @@ elif [[ "$*" =~ "stable" ]]; then
 fi
 
 if [[ "$*" =~ "clang" ]]; then
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable clang
-  # git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang # Skipping use proton clang
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable clang # Skipping
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
 elif [[ "$*" =~ "gcc" ]]; then
   git clone --depth=1 https://github.com/XSans02/arm32-gcc arm64
   git clone --depth=1 https://github.com/XSans02/arm64-gcc arm32
