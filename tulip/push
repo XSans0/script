@@ -1,6 +1,0 @@
-send_kernel
-
-send_msg "<b>Successful building: </b><code>$LOCALVERSION</code>" \
-           "<b>Linux Version: </b><code>$LINUX</code>" \
-           "<b>Build Date : </b><code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
-           "<b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>"
