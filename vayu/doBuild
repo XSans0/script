@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# Docker Kernel Build Script
+
+# Cloning some resource
+if [[ "$*" =~ "beta" ]]; then
+  BETA=beta-
+  git clone --depth=1 https://github.com/XSans02/kernel_sdm660.git -b test kernel
+  cd kernel || exit
+elif [[ "$*" =~ "stable" ]]; then
+  git clone --depth=1 https://github.com/XSans02/Xiaomi_Kernel_OpenSource -b vayu-r-oss kernel
+  cd kernel || exit
+fi
+
+if [[ "$*" =~ "clang" ]]; then
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable clang
+  # git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang # Skipping use proton clang
+elif [[ "$*" =~ "gcc" ]]; then
+  git clone --depth=1 https://github.com/okta-10/gcc-arm64.git arm64
+  git clone --depth=1 https://github.com/okta-10/gcc-arm32.git arm32
+fi
+
+if [[ "$*" =~ "clang" ]]; then
+  TOOLCHAIN_DIR="clang"
+  CCV="$("$TOOLCHAIN_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+  LDV="$("$TOOLCHAIN_DIR"/bin/ld.lld --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+  KBUILD_COMPILER_STRING="$CCV + $LDV"
+elif [[ "$*" =~ "gcc" ]]; then
+  TOOLCHAIN_DIR="arm64"
+  KBUILD_COMPILER_STRING=$("$TOOLCHAIN_DIR"/bin/aarch64-elf-gcc --version | head -n 1)
+fi
+
+git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
+git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
+
+# Setup Environtment
+KERNEL_DIR=$PWD
+KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
+KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
+LOCALVERSION=r1.0
+DEVICE=vayu
+AK3_DIR=$KERNEL_DIR/ak3/
+export TZ="Asia/Jakarta"
+ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
+ZIP_DATE2=$(date +"%H%M")
+SOURCE="$(git rev-parse --abbrev-ref HEAD)"
+COMMIT=$(git log --pretty=format:'%s' -1)
+
+if [[ "$*" =~ "clang" ]]; then
+  # Kernel & Clang Setup
+  CLANG_DIR="$KERNEL_DIR/clang"
+  export PATH="$KERNEL_DIR/clang/bin:$PATH"
+  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+  export KBUILD_COMPILER_STRING
+fi
+
+export ZIP_DATE
+export ZIP_DATE2
+export SOURCE
+export ARCH=arm64
+export SUBARCH=arm64
+export KBUILD_BUILD_USER="XSans02"
+export KBUILD_BUILD_HOST="CircleCI-Server"
+export LOCALVERSION
+
+# Telegram
+TELEGRAM=Telegram/telegram
+sendInfo() {
+  "${TELEGRAM}" -c "${CHANNEL_ID}" -H -D \
+      "$(
+          for POST in "${@}"; do
+              echo "${POST}"
+          done
+      )"
+}
+
+sendKernel() {
+  "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
+  -c "${CHANNEL_ID}" -H \
+      "# <code>$DEVICE</code> # <code>md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> # <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
+}
+
+sendInfo  "<b>=================================</b>" \
+          "<b>Start Building :</b> <code>Waifu Kernel</code>" \
+          "<b>Device : </b><code>$DEVICE</code>" \
+          "<b>Source Branch :</b> <code>$SOURCE</code>" \
+          "<b>=================================</b>"
+
+# Start Count
+BUILD_START=$(date +"%s")
+
+make O=out "$DEVICE"_defconfig
+# Start Compile
+if [[ "$*" =~ "clang" ]]; then
+  make -j"$(nproc --all)" O=out \
+          CC=clang \
+          CROSS_COMPILE=aarch64-linux-gnu- \
+          CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+elif [[ "$*" =~ "gcc" ]]; then
+  export CROSS_COMPILE="$KERNEL_DIR/arm64/bin/aarch64-elf-"
+  export CROSS_COMPILE_ARM32="$KERNEL_DIR/arm32/bin/arm-eabi-"
+  make -j"$(nproc --all)" O=out ARCH=arm64
+fi
+
+# If build error
+if ! [ -a "$KERNEL_IMG" ]; then
+  sendInfo "<b>Failed building kernel for <code>$DEVICE</code> Please fix it...!</b>"
+  exit 1
+fi
+
+# End Count and Calculate Total Build Time
+BUILD_END=$(date +"%s")
+DIFF=$(( BUILD_END - BUILD_START ))
+
+LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
+
+# Make zip
+UseDtb=y
+AfterDTS=qcom
+BASE_DTB_NAME=sm8150-v2
+
+cp -r "$KERNEL_IMG" "$AK3_DIR"/
+cp -r "$KERNEL_DTBO" "$AK3_DIR"/
+
+    if [[ "$UseDtb" == "y" ]];then
+        ( find "$KERNEL_DIR/out/arch/arm64/boot/dts/$AfterDTS" -name "*.dtb" -exec cat {} + > $AK3_DIR/dtb )
+      [[ ! -e "$AK3_DIR/dtb" ]] && [[ ! -z "$BASE_DTB_NAME" ]] && cp $KERNEL_DIR/out/arch/arm64/boot/dts/$AfterDTS/$BASE_DTB_NAME $AK3_DIR/dtb
+    fi
+cd "$AK3_DIR" || exit
+
+# Making zip
+ZIP_NAME=Waifu-Raiden-
+if [[ "$*" =~ "beta" ]]; then
+  zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$BETA""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+else
+  zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+fi
+
+cd "$KERNEL_DIR" || exit
+
+sendKernel
+sendInfo  "<b>=================================</b>" \
+          "<b>Success Building :</b> <code>Waifu Kernel</code>" \
+          "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
+          "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
+          "<b>Toolchain :</b> <code>$KBUILD_COMPILER_STRING</code>" \
+          "<b>Last Commit :</b> <code>$COMMIT</code>" \
+          "<b>=================================</b>"
