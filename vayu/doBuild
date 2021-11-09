@@ -92,9 +92,8 @@ if [[ "$TC" == "clang" ]]; then
                     ARCH=arm64 \
                     SUBARCH=arm64 \
                     CC=clang \
-                    CLANG_TRIPLE=aarch64-linux-gnu- \
-                    CROSS_COMPILE=aarch64-linux-android- \
-                    CROSS_COMPILE_ARM32=arm-linux-androideabi-
+                    CROSS_COMPILE=aarch64-linux-gnu- \
+                    CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 elif [[ "$TC" == "gcc" ]]; then
     make O=out ARCH=arm64 "$DEVICE"_user_defconfig
     make -j$(nproc --all) O=out \
