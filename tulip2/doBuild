@@ -49,7 +49,7 @@ KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 LOCALVERSION="$BETA""$VERSION""$CAMVERSION"
-DEVICE=tulip
+DEVICE=lavender
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
 ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
