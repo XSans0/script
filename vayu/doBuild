@@ -3,11 +3,12 @@
 
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
-  BETA=beta-
+  TYPE=Beta_
   git clone --depth=1 https://github.com/XSans02/kernel_vayu -b stable kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
+  TYPE=Stable_
   git clone --depth=1 https://github.com/XSans02/Xiaomi_Kernel_OpenSource -b vayu-r-oss kernel
   DEFCONFIG=vayu_user_defconfig
   cd kernel || exit
@@ -28,8 +29,10 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION="$BETA"r1.0
+LOCALVERSION=r1.0
 DEVICE=vayu
+KBUILD_BUILD_USER=XSans02
+KBUILD_BUILD_HOST=CircleCI-Server
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
 ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
@@ -58,8 +61,8 @@ export ZIP_DATE2
 export SOURCE
 export ARCH=arm64
 export SUBARCH=arm64
-export KBUILD_BUILD_USER="XSans02"
-export KBUILD_BUILD_HOST="CircleCI-Server"
+export KBUILD_BUILD_USER
+export KBUILD_BUILD_HOST
 export LOCALVERSION
 
 # Telegram
@@ -142,9 +145,9 @@ cd "$AK3_DIR" || exit
 # Making zip
 ZIP_NAME=Waifu-Raiden-
 if [[ "$*" =~ "beta" ]]; then
-  zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$BETA""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$TYPE""$LOCALVERSION"_"$ZIP_DATE".zip ./*
 else
-  zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$TYPE""$LOCALVERSION"_"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
@@ -154,6 +157,6 @@ sendInfo  "<b>=================================</b>" \
           "<b>Success Building :</b> <code>Waifu Kernel</code>" \
           "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
           "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
-          "<b>Toolchain :</b> <code>$KBUILD_COMPILER_STRING</code>" \
+          "<b>Compiler :</b> <code>$KBUILD_COMPILER_STRING</code>" \
           "<b>Last Commit :</b> <code>$COMMIT</code>" \
           "<b>=================================</b>"
