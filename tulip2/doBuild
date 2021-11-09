@@ -132,9 +132,9 @@ cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 if [[ "$*" =~ "beta" ]]; then
-  zip -r9 ["$ZIP_DATE"]Waifu:Raiden-EAS-"$LOCALVERSION".zip ./*
+  zip -r9 Waifu:Raiden-EAS-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
 else
-  zip -r9 ["$ZIP_DATE"]Waifu:Raiden-EAS-"$LOCALVERSION".zip ./*
+  zip -r9 Waifu:Raiden-EAS-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
