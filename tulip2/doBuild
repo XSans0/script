@@ -91,6 +91,7 @@ sendKernel() {
 
 sendInfo  "<b>=================================</b>" \
           "<b>Start Building :</b> <code>Waifu Kernel</code>" \
+          "<b>Device : </b><code>$DEVICE</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
           "<b>=================================</b>"
 
