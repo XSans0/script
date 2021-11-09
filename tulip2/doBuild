@@ -4,7 +4,7 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   BETA=beta-
-  git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_sdm660-1.git -b eas-12-bpf kernel
+  git clone --depth=1 https://github.com/XSans02/kernel_sdm660.git -b test kernel
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   git clone --depth=1 https://github.com/XSans02/kernel_sdm660.git -b eas kernel
@@ -24,7 +24,8 @@ if [[ "$*" =~ "oc" ]]; then
 fi
 
 if [[ "$*" =~ "clang" ]]; then
-  git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable clang
+  # git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang # Skipping use proton clang
 elif [[ "$*" =~ "gcc" ]]; then
   git clone --depth=1 https://github.com/okta-10/gcc-arm64.git arm64
   git clone --depth=1 https://github.com/okta-10/gcc-arm32.git arm32
@@ -59,7 +60,7 @@ if [[ "$*" =~ "clang" ]]; then
   # Kernel & Clang Setup
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
   export KBUILD_COMPILER_STRING
 fi
 
@@ -132,9 +133,9 @@ cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 if [[ "$*" =~ "beta" ]]; then
-  zip -r9 Waifu:Raiden-EAS-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
+  zip -r9 Waifu;Raiden-EAS-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
 else
-  zip -r9 Waifu:Raiden-EAS-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
+  zip -r9 Waifu;Raiden-EAS-"$LOCALVERSION"_"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
