@@ -47,7 +47,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION="$BETA""$VERSION""$CAMVERSION"-Rev1.3
+LOCALVERSION="$BETA""$VERSION""$CAMVERSION"
 DEVICE=tulip
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
@@ -88,10 +88,10 @@ sendKernel() {
       "# <code>$DEVICE</code> # <code>md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> # <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
 }
 
-sendInfo  "<b>======================================</b>" \
+sendInfo  "<b>=================================</b>" \
           "<b>Start Building :</b> <code>Waifu Kernel</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
-          "<b>======================================</b>"
+          "<b>=================================</b>"
 
 # Start Count
 BUILD_START=$(date +"%s")
@@ -140,10 +140,10 @@ fi
 cd "$KERNEL_DIR" || exit
 
 sendKernel
-sendInfo  "<b>======================================</b>" \
+sendInfo  "<b>=================================</b>" \
           "<b>Success Building :</b> <code>Waifu Kernel</code>" \
           "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
           "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
           "<b>Toolchain :</b> <code>$KBUILD_COMPILER_STRING</code>" \
           "<b>Last Commit :</b> <code>$COMMIT</code>" \
-          "<b>======================================</b>"
+          "<b>=================================</b>"
