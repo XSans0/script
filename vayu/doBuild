@@ -88,7 +88,7 @@ sendInfo  "<b>=================================</b>" \
 # Start Count
 BUILD_START=$(date +"%s")
 
-make O=out "$DEVICE"_defconfig
+make O=out "$DEVICE"_user_defconfig
 # Start Compile
 if [[ "$*" =~ "clang" ]]; then
   make -j"$(nproc --all)" O=out \
