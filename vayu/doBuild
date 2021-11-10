@@ -15,11 +15,11 @@ elif [[ "$*" =~ "stable" ]]; then
 fi
 
 if [[ "$*" =~ "clang" ]]; then
-  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable clang
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
   git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
 elif [[ "$*" =~ "gcc" ]]; then
-  git clone --depth=1 https://github.com/XSans02/arm32-gcc arm64
-  git clone --depth=1 https://github.com/XSans02/arm64-gcc arm32
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32
 fi
 
 git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
@@ -29,9 +29,9 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION=Rev1.1
+LOCALVERSION=Rev1.2
 DEVICE=vayu
-KBUILD_BUILD_USER=XSans
+KBUILD_BUILD_USER="XSans"
 KBUILD_BUILD_HOST=CircleCI-Server
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
@@ -45,7 +45,7 @@ if [[ "$*" =~ "clang" ]]; then
   TC=clang
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1)"
+  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
   export KBUILD_COMPILER_STRING
 elif [[ "$*" =~ "gcc" ]]; then
   # Kernel & GCC setup
