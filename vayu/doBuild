@@ -32,7 +32,7 @@ KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 LOCALVERSION="$TYPE"Rev1.3
 DEVICE=vayu
 KBUILD_BUILD_USER="XSans"
-KBUILD_BUILD_HOST=CircleCI-Server
+KBUILD_BUILD_HOST=Sandro20020-CIServer
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
 ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
