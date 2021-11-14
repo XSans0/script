@@ -112,7 +112,7 @@ elif [[ "$TC" == "gcc" ]]; then
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
                     SUBARCH=arm64 \
-                    CROSS_COMPILE=aarch64-elf-gcc- \
+                    CROSS_COMPILE=aarch64-elf- \
                     CROSS_COMPILE_ARM32=arm-eabi-
 fi
 
