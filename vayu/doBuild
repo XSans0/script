@@ -3,12 +3,12 @@
 
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
-  TYPE=Beta_
+  TYPE=Beta-
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
-  TYPE=Stable_
+  TYPE=Stable-
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
@@ -144,11 +144,8 @@ cd "$AK3_DIR" || exit
 
 # Making zip
 ZIP_NAME=NTR-
-if [[ "$*" =~ "beta" ]]; then
-     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
-else
-     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
-fi
+
+zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
 
 cd "$KERNEL_DIR" || exit
 
