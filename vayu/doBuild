@@ -4,7 +4,8 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta-
-  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-v2 kernel
+  git clone --depth=1 https://github.com/XSans02/Xiaomi_Kernel_OpenSource -b vayu-r-oss kernel
+  # git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
@@ -15,8 +16,8 @@ elif [[ "$*" =~ "stable" ]]; then
 fi
 
 if [[ "$*" =~ "clang" ]]; then
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
-  # git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
 elif [[ "$*" =~ "gcc" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
