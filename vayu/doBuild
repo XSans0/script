@@ -4,12 +4,12 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta_
-  git clone --depth=1 https://github.com/XSans02/kernel_vayu -b test kernel
+  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable_
-  git clone --depth=1 https://github.com/XSans02/kernel_vayu -b stable kernel
+  git clone --depth=1 https://github.com/XSans02/vayu -b rebase kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 fi
@@ -29,10 +29,10 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION="$TYPE"Rev1.3
+LOCALVERSION="$TYPE"Rev2.0
 DEVICE=vayu
-KBUILD_BUILD_USER="XSans"
-KBUILD_BUILD_HOST=Sandro20020-CIServer
+KBUILD_BUILD_USER="XSans02"
+KBUILD_BUILD_HOST="CircleCI-Server"
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
 ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
@@ -83,7 +83,7 @@ sendKernel() {
 }
 
 sendInfo  "<b>=================================</b>" \
-          "<b>Start Building :</b> <code>Waifu Kernel</code>" \
+          "<b>Start Building :</b> <code>NTR Kernel</code>" \
           "<b>Device : </b><code>$DEVICE</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
           "<b>=================================</b>"
@@ -143,7 +143,7 @@ cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=Waifu-Raiden-
+ZIP_NAME=NTR-
 if [[ "$*" =~ "beta" ]]; then
      zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
 else
@@ -154,7 +154,7 @@ cd "$KERNEL_DIR" || exit
 
 sendKernel
 sendInfo  "<b>=================================</b>" \
-          "<b>Success Building :</b> <code>Waifu Kernel</code>" \
+          "<b>Success Building :</b> <code>NTR Kernel</code>" \
           "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
           "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
           "<b>Compiler :</b> <code>$KBUILD_COMPILER_STRING</code>" \
