@@ -4,7 +4,7 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta-
-  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
+  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-v2 kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
