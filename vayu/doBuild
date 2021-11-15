@@ -21,8 +21,8 @@ if [[ "$*" =~ "clang" ]]; then
 elif [[ "$*" =~ "gcc" ]]; then
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc-64 arm64
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc-32 arm32
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32
 fi
 
 git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
