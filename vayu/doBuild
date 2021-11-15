@@ -55,7 +55,7 @@ elif [[ "$*" =~ "gcc" ]]; then
   TC=gcc
   GCC_DIR="$KERNEL_DIR"/arm64
   export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
+  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-linux-android-gcc --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 fi
 
@@ -115,8 +115,8 @@ elif [[ "$TC" == "gcc" ]]; then
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
                     SUBARCH=arm64 \
-                    CROSS_COMPILE=aarch64-elf- \
-                    CROSS_COMPILE_ARM32=arm-eabi-
+                    CROSS_COMPILE=aarch64-linux-android- \
+                    CROSS_COMPILE_ARM32=arm-linux-androideabi-
 fi
 
 # If build error
