@@ -32,7 +32,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION="$TYPE"Rev2.0
+LOCALVERSION=Rev2.0
 DEVICE=vayu
 KBUILD_BUILD_USER="XSans02"
 KBUILD_BUILD_HOST="CircleCI-Server"
@@ -58,6 +58,9 @@ elif [[ "$*" =~ "gcc" ]]; then
   KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-linux-android-gcc --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 fi
+
+# Generate a full DEFCONFIG prior building. 1 is YES | 0 is NO(default)
+DEF_REG=1
 
 export ZIP_DATE
 export ZIP_DATE2
@@ -96,6 +99,12 @@ BUILD_START=$(date +"%s")
 
 if [[ "$TC" == "clang" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
+    if [ $DEF_REG = 1 ]; then
+	cp .config arch/arm64/configs/$DEFCONFIG
+	git add arch/arm64/configs/$DEFCONFIG
+	git commit -m "$DEFCONFIG: Regenerate
+					This is an auto-generated commit"
+    fi
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
                     SUBARCH=arm64 \
@@ -148,7 +157,11 @@ cd "$AK3_DIR" || exit
 # Making zip
 ZIP_NAME=NTR-
 
-zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+if [[ "$*" =~ "beta" ]]; then
+     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$TYPE""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+else
+     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$TYPE""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+fi
 
 cd "$KERNEL_DIR" || exit
 
