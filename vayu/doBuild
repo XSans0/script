@@ -158,7 +158,7 @@ cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-さゆ-
+ZIP_NAME=NTR-
 
 if [[ "$*" =~ "beta" ]]; then
      zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME""$REVISION"_"$ZIP_DATE".zip ./*
