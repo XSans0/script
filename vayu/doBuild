@@ -2,15 +2,18 @@
 # Docker Kernel Build Script
 
 # Cloning some resource
+REVISION=Rev2.1
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
   DEFCONFIG=vayu_defconfig
+  LOCALVERSION="$TYPE"-"$REVISION"
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase kernel
   DEFCONFIG=vayu_defconfig
+  LOCALVERSION="$REVISION"
   cd kernel || exit
 fi
 
@@ -32,8 +35,6 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-REVISION=Rev2.1
-LOCALVERSION="$REVISION"
 DEVICE=vayu
 KBUILD_BUILD_USER="XSans02"
 KBUILD_BUILD_HOST="CircleCI-Server"
