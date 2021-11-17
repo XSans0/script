@@ -16,8 +16,8 @@ fi
 
 if [[ "$*" =~ "clang" ]]; then
   # git clone --depth=1 https://github.com/xyz-prjkt/xRageTC-clang clang
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
-  # git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
 elif [[ "$*" =~ "gcc" ]]; then
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
