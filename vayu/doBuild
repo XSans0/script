@@ -3,12 +3,12 @@
 
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
-  TYPE=Beta-
+  TYPE=Beta
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
-  TYPE=Stable-
+  TYPE=Stable
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
@@ -32,7 +32,8 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
-LOCALVERSION=Rev2.0
+REVISION=Rev2.1
+LOCALVERSION="$REVISION"
 DEVICE=vayu
 KBUILD_BUILD_USER="XSans02"
 KBUILD_BUILD_HOST="CircleCI-Server"
@@ -60,7 +61,7 @@ elif [[ "$*" =~ "gcc" ]]; then
 fi
 
 # Generate a full DEFCONFIG prior building. 1 is YES | 0 is NO(default)
-DEF_REG=1
+DEF_REG=0
 
 export ZIP_DATE
 export ZIP_DATE2
@@ -155,12 +156,12 @@ cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-
+ZIP_NAME=NTR-さゆ-
 
 if [[ "$*" =~ "beta" ]]; then
-     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$TYPE""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+     zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME""$REVISION"_"$ZIP_DATE".zip ./*
 else
-     zip -r9 ["$ZIP_DATE2"]"$ZIP_NAME""$TYPE""$LOCALVERSION"_"$ZIP_DATE".zip ./*
+     zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME""$REVISION"_"$ZIP_DATE".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
