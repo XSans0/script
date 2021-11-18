@@ -11,7 +11,7 @@ if [[ "$*" =~ "beta" ]]; then
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
-  git clone --depth=1 https://github.com/XSans02/vayu -b rebase kernel
+  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-stable kernel
   DEFCONFIG=vayu_defconfig
   LOCALVERSION="$REVISION"
   cd kernel || exit
