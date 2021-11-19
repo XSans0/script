@@ -2,7 +2,7 @@
 # Docker Kernel Build Script
 
 # Cloning some resource
-REVISION=Rev2.1
+REVISION=Rev2.2
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
@@ -94,6 +94,7 @@ sendKernel() {
 sendInfo  "<b>=================================</b>" \
           "<b>Start Building :</b> <code>NTR Kernel</code>" \
           "<b>Device : </b><code>$DEVICE</code>" \
+          "<b>Status : </b><code>$TYPE</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
           "<b>=================================</b>"
 
