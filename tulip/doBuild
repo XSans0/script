@@ -24,8 +24,10 @@ if [[ "$*" =~ "clang" ]]; then
 elif [[ "$*" =~ "gcc" ]]; then
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32
+  git clone --depth=1 https://github.com/fiqri19102002/aarch64-gcc.git -b gnu-gcc-10-tarballs arm64
+  git clone --depth=1 https://github.com/fiqri19102002/arm-gcc.git -b gnu-gcc-10-tarballs arm32
 fi
 
 git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
@@ -127,8 +129,8 @@ elif [[ "$TC" == "gcc" ]]; then
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
                     SUBARCH=arm64 \
-                    CROSS_COMPILE=aarch64-linux-android- \
-                    CROSS_COMPILE_ARM32=arm-linux-androideabi-
+                    CROSS_COMPILE=aarch64-linux-gnu- \
+                    CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 fi
 
 # If build error
