@@ -59,7 +59,7 @@ elif [[ "$*" =~ "gcc" ]]; then
   TC=gcc
   GCC_DIR="$KERNEL_DIR"/arm64
   export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-linux-android-gcc --version | head -n 1)"
+  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-linux-gnu-gcc --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 fi
 
