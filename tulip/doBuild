@@ -35,7 +35,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b master ak3
 
 # Setup Environtment
 KERNEL_DIR=$PWD
-KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image-gz.dtb
+KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 DEVICE=tulip
 KBUILD_BUILD_USER="XSansツ"
