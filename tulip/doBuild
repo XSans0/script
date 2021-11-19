@@ -31,7 +31,7 @@ elif [[ "$*" =~ "gcc" ]]; then
 fi
 
 git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
-git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
+git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b master ak3
 
 # Setup Environtment
 KERNEL_DIR=$PWD
