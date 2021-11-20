@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
+# Copyright ©2021 XSans02
 # Docker Kernel Build Script
 
 # Cloning some resource
-REVISION=Rev3.0
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
   DEFCONFIG=vayu_defconfig
-  LOCALVERSION="$TYPE"-"$REVISION"
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
   git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_vayu -b staging kernel
   DEFCONFIG=vayu_defconfig
-  LOCALVERSION="$REVISION"
   cd kernel || exit
 fi
 
@@ -71,7 +69,6 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER
 export KBUILD_BUILD_HOST
-export LOCALVERSION
 
 # Telegram
 TELEGRAM=Telegram/telegram
@@ -92,12 +89,12 @@ sendKernel() {
       "<code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
 }
 
-sendInfo  "<b>*********************************</b>" \
+sendInfo  "<b>**************************************</b>" \
           "<b>Start Building :</b> <code>NTR Kernel</code>" \
           "<b>Device : </b><code>$DEVICE</code>" \
           "<b>Status : </b><code>$TYPE</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
-          "<b>*********************************</b>"
+          "<b>**************************************</b>"
 
 # Start Count
 BUILD_START=$(date +"%s")
@@ -160,17 +157,17 @@ cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-
+ZIP_NAME=NTR-Yoshizawa
 
-zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME""$REVISION"_"$ZIP_DATE".zip ./*
+zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME"_"$ZIP_DATE".zip ./*
 
 cd "$KERNEL_DIR" || exit
 
 sendKernel
-sendInfo  "<b>*********************************</b>" \
+sendInfo  "<b>**************************************</b>" \
           "<b>Success Building :</b> <code>NTR Kernel</code>" \
           "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
           "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
           "<b>Compiler :</b> <code>$KBUILD_COMPILER_STRING</code>" \
           "<b>Last Commit :</b> <code>$COMMIT</code>" \
-          "<b>*********************************</b>"
+          "<b>**************************************</b>"
