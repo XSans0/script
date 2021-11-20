@@ -19,7 +19,7 @@ fi
 
 # If newcam
 if [[ "$*" =~ "newcam" ]]; then
-   sed -i 's/CONFIG_MACH_XIAOMI_NEW_CAMERA=n/CONFIG_MACH_XIAOMI_NEW_CAMERA=y/g' arch/arm64/configs/$DEFCONFIG
+   sed -i 's/CONFIG_MACH_XIAOMI_NEW_CAMERA=n/CONFIG_MACH_XIAOMI_NEW_CAMERA=y/g' kernel/arch/arm64/configs/$DEFCONFIG
    CAM=NewCam
 else
    CAM=OldCam
