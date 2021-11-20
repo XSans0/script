@@ -5,7 +5,7 @@
 REVISION=Rev1.0
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
-  git clone --depth=1 https://github.com/XSans02/STRIX_kernel_xiaomi-sdm660 -b sdm660-eas-test kernel
+  git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_sdm660-1 -b eas-12-bpf kernel
   DEFCONFIG=tulip_defconfig
   LOCALVERSION="$TYPE"-"$REVISION"
   cd kernel || exit
