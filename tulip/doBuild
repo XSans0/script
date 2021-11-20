@@ -7,13 +7,11 @@ if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
   git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_sdm660-1 -b eas-12-bpf kernel
   DEFCONFIG=tulip_defconfig
-  LOCALVERSION="$TYPE"-"$REVISION"
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-stable kernel
   DEFCONFIG=tulip_defconfig
-  LOCALVERSION="$REVISION"
   cd kernel || exit
 fi
 
@@ -40,6 +38,13 @@ fi
 
 git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
 git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b master ak3
+
+# Version setup
+if [[ "$TYPE" == "Beta" ]]; then
+   LOCALVERSION="$CAM"-"$TYPE"-"$REVISION"
+else
+   LOCALVERSION="$CAM"-"$REVISION"
+fi
 
 # Setup Environtment
 KERNEL_DIR=$PWD
