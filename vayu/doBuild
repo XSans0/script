@@ -2,7 +2,7 @@
 # Docker Kernel Build Script
 
 # Cloning some resource
-REVISION=Rev2.3
+REVISION=Rev3.0
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
   git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
@@ -11,14 +11,13 @@ if [[ "$*" =~ "beta" ]]; then
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
-  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-stable kernel
+  git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_vayu -b staging kernel
   DEFCONFIG=vayu_defconfig
   LOCALVERSION="$REVISION"
   cd kernel || exit
 fi
 
 if [[ "$*" =~ "clang" ]]; then
-  # git clone --depth=1 https://github.com/xyz-prjkt/xRageTC-clang clang
   # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
   # git clone --depth=1 https://github.com/XSans02/clang-14 clang
