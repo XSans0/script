@@ -31,7 +31,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 
 # Setup Environtment
 KERNEL_DIR=$PWD
-KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz
+KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 KERNEL_DTB=$KERNEL_DIR/out/arch/arm64/boot/dts/qcom
 DEVICE=vayu
