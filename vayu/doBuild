@@ -10,7 +10,7 @@ if [[ "$*" =~ "beta" ]]; then
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
-  git clone --depth=1 https://github.com/XSans02/kernel_vayu -b staging kernel
+  git clone --depth=1 https://github.com/XSans02/kernel_vayu -b eleven kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 fi
@@ -84,7 +84,7 @@ sendInfo() {
 sendKernel() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
-      "<code>Device: $DEVICE</code>%0A<code>Md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code>%0A<code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>"
+      "| <code>Device: $DEVICE</code> | <code>Md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> | <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code> |"
 }
 
 sendInfo  "<b>*******************************************</b>" \
