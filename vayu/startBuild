@@ -5,7 +5,7 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
-  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
+  git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_vayu -b 12 kernel
   DEFCONFIG=vayu_defconfig
   export LOCALVERSION=-"$TYPE"
   cd kernel || exit
