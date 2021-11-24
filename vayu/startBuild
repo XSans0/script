@@ -150,7 +150,7 @@ find ${KERNEL_DTB} -name "*.dtb" -exec cat {} + > ${AK3_DIR}/dtb
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-Yoshizawa
+ZIP_NAME=NTR-Eimi_Fukada
 
 zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
 
