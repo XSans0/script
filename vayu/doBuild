@@ -16,10 +16,18 @@ elif [[ "$*" =~ "stable" ]]; then
   cd kernel || exit
 fi
 
-if [[ "$*" =~ "clang" ]]; then
-  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang
-  # git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
-  git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
+if [[ "$*" =~ "aosp" ]]; then
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang # Clang 13.0.3
+elif [[ "$*" =~ "proton" ]]; then
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
+elif [[ "$*" =~ "nad13" ]]; then
+  git clone --depth=1 https://gitlab.com/najahi/clang.git -b dev/13.0 clang # Clang 13
+elif [[ "$*" =~ "nad14" ]]; then
+  git clone --depth=1 https://gitlab.com/najahi/clang.git -b dev/14.0 clang # Clang 14
+elif [[ "$*" =~ "azure" ]]; then
+  git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang # Clang 14
+elif [[ "$*" =~ "clang14" ]]; then
+  git clone --depth=1 https://github.com/XSans02/clang-14 clang # Clang 14
 elif [[ "$*" =~ "gcc" ]]; then
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
