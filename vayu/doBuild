@@ -5,12 +5,13 @@
 # Cloning some resource
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
-  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-test kernel
+  git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_vayu -b 11-test kernel
   DEFCONFIG=vayu_defconfig
+  export LOCALVERSION=-"$TYPE"
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
-  git clone --depth=1 https://github.com/XSans02/kernel_vayu -b eleven kernel
+  git clone --depth=1 https://github.com/XSans02/vayu -b rebase-stable kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 fi
@@ -33,6 +34,7 @@ git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
+KERNEL_DTB=$KERNEL_DIR/out/arch/arm64/boot/dts/qcom
 DEVICE=vayu
 KBUILD_BUILD_USER="XSansツ"
 KBUILD_BUILD_HOST="CircleCI-Server"
@@ -48,7 +50,7 @@ if [[ "$*" =~ "clang" ]]; then
   TC=clang
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
   export KBUILD_COMPILER_STRING
 elif [[ "$*" =~ "gcc" ]]; then
   # Kernel & GCC setup
@@ -141,21 +143,14 @@ DIFF=$(( BUILD_END - BUILD_START ))
 LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
 # Make zip
-UseDtb=y
-AfterDTS=qcom
-BASE_DTB_NAME=sm8150-v2
-
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cp -r "$KERNEL_DTBO" "$AK3_DIR"/
+find ${KERNEL_DTB} -name "*.dtb" -exec cat {} + > ${AK3_DIR}/dtb
 
-    if [[ "$UseDtb" == "y" ]];then
-        ( find "$KERNEL_DIR/out/arch/arm64/boot/dts/$AfterDTS" -name "*.dtb" -exec cat {} + > $AK3_DIR/dtb )
-      [[ ! -e "$AK3_DIR/dtb" ]] && [[ ! -z "$BASE_DTB_NAME" ]] && cp $KERNEL_DIR/out/arch/arm64/boot/dts/$AfterDTS/$BASE_DTB_NAME $AK3_DIR/dtb
-    fi
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-Yoshizawa
+ZIP_NAME=NTR-Eimi_Fukada
 
 zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
 
