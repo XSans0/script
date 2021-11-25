@@ -15,6 +15,7 @@ elif [[ "$*" =~ "stable" ]]; then
   cd kernel || exit
 elif [[ "$*" =~ "ocbeta" ]]; then
   TYPE=Beta
+  TYPE2=OC
   git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_sdm660 -b 12-bpf-oc-test kernel
   DEFCONFIG=tulip_defconfig
   cd kernel || exit
@@ -169,7 +170,11 @@ cp -r "$KERNEL_IMG" "$AK3_DIR"/
 cd "$AK3_DIR" || exit
 
 # Packing zip
-ZIP_NAME=NTR-Yoshizawa
+if [[ "$TYPE2" == "OC" ]]; then
+    ZIP_NAME=NTR-Eimi_Fukada-EAS-OverClock
+else
+    ZIP_NAME=NTR-Yoshizawa-EAS
+fi
 
 zip -r9 ["$ZIP_DATE2"]["$TYPE"]["$CAM"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
 
