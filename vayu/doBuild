@@ -110,6 +110,8 @@ sendInfo  "<b>*******************************************</b>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
           "<b>*******************************************</b>"
 
+apt-get install cpio libtinfo5
+
 # Start Count
 BUILD_START=$(date +"%s")
 
