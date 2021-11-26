@@ -13,7 +13,7 @@ elif [[ "$*" =~ "stable" ]]; then
   git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_sdm660 -b 12-bpf kernel
   DEFCONFIG=tulip_defconfig
   cd kernel || exit
-elif [[ "$*" =~ "ocbeta" ]]; then
+elif [[ "$*" =~ "octest" ]]; then
   TYPE=Beta
   TYPE2=OC
   git clone --depth=1 https://github.com/XSans02/kernel_xiaomi_sdm660 -b 12-bpf-oc-test kernel
