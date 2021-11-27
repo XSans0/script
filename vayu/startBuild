@@ -5,7 +5,7 @@
 # Cloning kernel resource
 if [[ "$*" =~ "beta" ]]; then
   TYPE=Beta
-  git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/vayu -b test kernel
+  git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/vayu -b caf-test kernel
   DEFCONFIG=vayu_defconfig
   export LOCALVERSION=-"$TYPE"
   cd kernel || exit
