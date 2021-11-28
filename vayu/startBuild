@@ -168,7 +168,7 @@ cd "$AK3_DIR" || exit
 # Making zip
 ZIP_NAME=NTR-Eimi_Fukada
 
-zip -r9 ["$ZIP_DATE2"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
+zip -r9 ["$ZIP_DATE2"]["$DEVICE"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
 
 cd "$KERNEL_DIR" || exit
 
