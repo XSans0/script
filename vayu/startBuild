@@ -22,7 +22,7 @@ if [[ "$*" =~ "aosp" ]]; then
   TC=clang
 elif [[ "$*" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
-  TC=clang
+  TC=proton
 elif [[ "$*" =~ "nad13" ]]; then
   git clone --depth=1 https://gitlab.com/najahi/clang.git -b dev/13.0 clang # Clang 13
   TC=clang
@@ -61,7 +61,7 @@ ZIP_DATE2=$(date +"%H%M")
 SOURCE="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT=$(git log --pretty=format:'%s' -1)
 
-if [[ "$TC" == "clang" ]]; then
+if [[ "$TC" == "clang" "proton" ]]; then
   # Kernel & Clang Setup
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
@@ -115,14 +115,8 @@ apt-get install cpio libtinfo5
 # Start Count
 BUILD_START=$(date +"%s")
 
-if [[ "$TC" == "clang" ]]; then
+if [[ "$TC" == "proton" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
-    if [ $DEF_REG = 1 ]; then
-	cp .config arch/arm64/configs/$DEFCONFIG
-	git add arch/arm64/configs/$DEFCONFIG
-	git commit -m "$DEFCONFIG: Regenerate
-					This is an auto-generated commit"
-    fi
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
                     SUBARCH=arm64 \
@@ -137,7 +131,53 @@ if [[ "$TC" == "clang" ]]; then
                     CLANG_TRIPLE=aarch64-linux-gnu- \
                     CROSS_COMPILE=aarch64-linux-gnu- \
                     CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-elif [[ "$TC" == "gcc" ]]; then
+fi
+
+if [[ "$TC" == "clang" ]]; then
+    make O=out ARCH=arm64 "$DEFCONFIG"
+    make -j$(nproc --all) O=out \
+                ARCH=arm64 \
+                SUBARCH=arm64 \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                AS=llvm-as \
+                NM=llvm-nm \
+                STRIP=llvm-strip \
+                OBJDUMP=llvm-objdump \
+                OBJSIZE=llvm-size \
+                READELF=llvm-readelf \
+                HOSTCC=clang \
+                HOSTCXX=clang++ \
+                HOSTAR=llvm-ar \
+                HOSTLD=ld.lld \
+                LD=ld.lld \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+else
+    make O=out ARCH=arm64 "$DEFCONFIG"
+    make -j$(nproc --all) O=out \
+                ARCH=arm64 \
+                SUBARCH=arm64 \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                AS=llvm-as \
+                NM=llvm-nm \
+                STRIP=llvm-strip \
+                OBJDUMP=llvm-objdump \
+                OBJSIZE=llvm-size \
+                READELF=llvm-readelf \
+                HOSTCC=clang \
+                HOSTCXX=clang++ \
+                HOSTAR=llvm-ar \
+                HOSTLD=ld.lld \
+                LD=ld.lld \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+fi
+
+if [[ "$TC" == "gcc" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
