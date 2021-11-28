@@ -38,8 +38,10 @@ elif [[ "$*" =~ "clang14" ]]; then
 elif [[ "$*" =~ "gcc" ]]; then
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
+  # git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
+  git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64 # GCC 12
+  git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32 # GCC 12
   TC=gcc
 fi
 
@@ -71,7 +73,7 @@ elif [[ "$TC" == "gcc" ]]; then
   # Kernel & GCC setup
   GCC_DIR="$KERNEL_DIR"/arm64
   export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-linux-android-gcc --version | head -n 1)"
+  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 fi
 
@@ -182,8 +184,8 @@ if [[ "$TC" == "gcc" ]]; then
     make -j$(nproc --all) O=out \
                     ARCH=arm64 \
                     SUBARCH=arm64 \
-                    CROSS_COMPILE=aarch64-linux-android- \
-                    CROSS_COMPILE_ARM32=arm-linux-androideabi-
+                    CROSS_COMPILE=aarch64-elf- \
+                    CROSS_COMPILE_ARM32=arm-eabi-
 fi
 
 # If build error
