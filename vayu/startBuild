@@ -63,8 +63,14 @@ ZIP_DATE2=$(date +"%H%M")
 SOURCE="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT=$(git log --pretty=format:'%s' -1)
 
-if [[ "$TC" == "clang" "proton" ]]; then
+if [[ "$TC" == "clang" ]]; then
   # Kernel & Clang Setup
+  CLANG_DIR="$KERNEL_DIR/clang"
+  export PATH="$KERNEL_DIR/clang/bin:$PATH"
+  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+  export KBUILD_COMPILER_STRING
+elif [[ "$TC" == "proton" ]]; then
+  # Kernel & Proton Setup
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
   KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
