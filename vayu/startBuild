@@ -4,7 +4,7 @@
 
 # Cloning kernel resource
 if [[ "$*" =~ "beta" ]]; then
-  TYPE=Beta
+  TYPE=Nightly
   git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/vayu -b 11-test kernel
   DEFCONFIG=vayu_defconfig
   export LOCALVERSION=-"$TYPE"
@@ -23,17 +23,8 @@ if [[ "$*" =~ "aosp" ]]; then
 elif [[ "$*" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
   TC=proton
-elif [[ "$*" =~ "nad13" ]]; then
-  git clone --depth=1 https://gitlab.com/najahi/clang.git -b dev/13.0 clang # Clang 13
-  TC=clang
-elif [[ "$*" =~ "nad14" ]]; then
-  git clone --depth=1 https://gitlab.com/najahi/clang.git -b dev/14.0 clang # Clang 14
-  TC=clang
 elif [[ "$*" =~ "azure" ]]; then
   git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang # Clang 14
-  TC=clang
-elif [[ "$*" =~ "clang14" ]]; then
-  git clone --depth=1 https://github.com/XSans02/clang-14 clang # Clang 14
   TC=clang
 elif [[ "$*" =~ "gcc" ]]; then
   # git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
@@ -55,7 +46,7 @@ KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 KERNEL_DTB=$KERNEL_DIR/out/arch/arm64/boot/dts/qcom
 DEVICE=vayu
 KBUILD_BUILD_USER="XSansツ"
-KBUILD_BUILD_HOST="CircleCI-Server"
+KBUILD_BUILD_HOST="Hentai-Server"
 AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
 ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
@@ -82,9 +73,6 @@ elif [[ "$TC" == "gcc" ]]; then
   KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
   export KBUILD_COMPILER_STRING
 fi
-
-# Generate a full DEFCONFIG prior building. 1 is YES | 0 is NO(default)
-DEF_REG=0
 
 export ZIP_DATE
 export ZIP_DATE2
