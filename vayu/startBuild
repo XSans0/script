@@ -209,7 +209,7 @@ if [[ "$UseDtb" == "y" ]];then
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-Sayaka
+ZIP_NAME=NTR-Yume
 
 zip -r9 ["$ZIP_DATE2"]["$DEVICE"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
 
