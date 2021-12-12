@@ -149,6 +149,7 @@ if [[ "$TC" == "clang" ]]; then
                 AR=llvm-ar \
                 LD=ld.lld \
                 STRIP=llvm-strip \
+                OBJCOPY=llvm-objcopy \
                 OBJDUMP=llvm-objdump \
                 OBJSIZE=llvm-size \
                 READELF=llvm-readelf \
@@ -165,6 +166,7 @@ else
                 AS=llvm-as \
                 NM=llvm-nm \
                 STRIP=llvm-strip \
+                OBJCOPY=llvm-objcopy \
                 OBJDUMP=llvm-objdump \
                 OBJSIZE=llvm-size \
                 READELF=llvm-readelf \
