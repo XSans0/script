@@ -179,10 +179,14 @@ fi
 if [[ "$TC" == "gcc" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
-                    ARCH=arm64 \
-                    SUBARCH=arm64 \
-                    CROSS_COMPILE=aarch64-elf- \
-                    CROSS_COMPILE_ARM32=arm-eabi-
+                ARCH=arm64 \
+                SUBARCH=arm64 \
+                CROSS_COMPILE_ARM32=arm-eabi- \
+                CROSS_COMPILE=aarch64-elf- \
+                LD=aarch64-elf-ld.lld \
+                AR=llvm-ar \
+                NM=llvm-nm \
+                OBJCOPY=llvm-objcopy
 fi
 
 # If build error
