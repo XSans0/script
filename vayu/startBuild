@@ -3,7 +3,7 @@
 # Docker Kernel Build Script
 
 # Installing some dep
-apt-get install cpio libtinfo5 wget tar
+apt-get install cpio libtinfo5
 
 # Cloning kernel resource
 if [[ "$*" =~ "beta" ]]; then
@@ -31,6 +31,9 @@ elif [[ "$*" =~ "proton" ]]; then
 elif [[ "$*" =~ "clang14" ]]; then
   git clone --depth=1 https://github.com/XSans02/XSansTC clang # Clang 14.0.0
   TC=clang
+elif [[ "$*" =~ "clang14-llvm" ]]; then
+  git clone --depth=1 https://github.com/XSans02/XSansTC clang # Clang 14.0.0 with full llvm
+  TC=clang-llvm
 elif [[ "$*" =~ "gcc10" ]]; then
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
@@ -63,20 +66,23 @@ if [[ "$TC" == "clang" ]]; then
   # Kernel & Clang Setup
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-  export KBUILD_COMPILER_STRING
+  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+elif [[ "$TC" == "clang-llvm" ]]; then
+  # Kernel & Clang Setup
+  CLANG_DIR="$KERNEL_DIR/clang"
+  PrefixDir="${CLANG_DIR}/bin/"
+  export PATH="$KERNEL_DIR/clang/bin:$PATH"
+  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 elif [[ "$TC" == "proton" ]]; then
   # Kernel & Proton Setup
   CLANG_DIR="$KERNEL_DIR/clang"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-  export KBUILD_COMPILER_STRING
+  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 elif [[ "$TC" == "gcc" ]]; then
   # Kernel & GCC setup
   GCC_DIR="$KERNEL_DIR"/arm64
   export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
-  KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
-  export KBUILD_COMPILER_STRING
+  export KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
 fi
 
 export ZIP_DATE
@@ -131,9 +137,7 @@ if [[ "$TC" == "proton" ]]; then
                     CLANG_TRIPLE=aarch64-linux-gnu- \
                     CROSS_COMPILE=aarch64-linux-gnu- \
                     CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-fi
-
-if [[ "$TC" == "clang" ]]; then
+elif [[ "$TC" == "clang" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
@@ -153,31 +157,28 @@ if [[ "$TC" == "clang" ]]; then
                 CLANG_TRIPLE=aarch64-linux-gnu- \
                 CROSS_COMPILE=aarch64-linux-gnu- \
                 CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-else
+elif [[ "$TC" == "clang-llvm" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
                 SUBARCH=arm64 \
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
                 CC=clang \
-                AS=llvm-as \
-                NM=llvm-nm \
-                STRIP=llvm-strip \
-                OBJCOPY=llvm-objcopy \
-                OBJDUMP=llvm-objdump \
-                OBJSIZE=llvm-size \
-                READELF=llvm-readelf \
-                HOSTCC=clang \
-                HOSTCXX=clang++ \
-                HOSTAR=llvm-ar \
-                HOSTLD=ld.lld \
-                LD=ld.lld \
-                CLANG_TRIPLE=aarch64-linux-gnu- \
                 CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-fi
-
-if [[ "$TC" == "gcc" ]]; then
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                LD=${PrefixDir}ld.lld \
+                AR=${PrefixDir}llvm-ar \
+                NM=${PrefixDir}llvm-nm \
+                AS=${PrefixDir}llvm-as \
+                STRIP=${PrefixDir}llvm-strip \
+                OBJCOPY=${PrefixDir}llvm-objcopy \
+                OBJDUMP=${PrefixDir}llvm-objdump \
+                READELF=${PrefixDir}llvm-readelf \
+                HOSTAR=${PrefixDir}llvm-ar \
+                HOSTAS=${PrefixDir}llvm-as \
+                HOSTLD=${PrefixDir}ld.lld
+elif [[ "$TC" == "gcc" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
