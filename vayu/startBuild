@@ -11,7 +11,6 @@ if [[ "$*" =~ "beta" ]]; then
   # git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/vayu -b 11-test kernel
   git clone --depth=1 https://github.com/XSans02/vayu -b 11-test kernel
   DEFCONFIG=vayu_defconfig
-  export LOCALVERSION=-"$TYPE"
   cd kernel || exit
 elif [[ "$*" =~ "stable" ]]; then
   TYPE=Stable
@@ -83,6 +82,14 @@ elif [[ "$TC" == "gcc" ]]; then
   GCC_DIR="$KERNEL_DIR"/arm64
   export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
   export KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
+fi
+
+# Setup kernel version
+VERSION=Kanna
+if [[ "$TYPE" == "Nightly" ]]; then
+    export LOCALVERSION=$VERSION-$TYPE
+else
+    export LOCALVERSION=$VERSION
 fi
 
 export ZIP_DATE
@@ -218,7 +225,7 @@ if [[ "$UseDtb" == "y" ]];then
 cd "$AK3_DIR" || exit
 
 # Making zip
-ZIP_NAME=NTR-Kanna
+ZIP_NAME=NTR-$VERSION
 
 zip -r9 ["$ZIP_DATE2"]["$DEVICE"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
 
