@@ -212,15 +212,19 @@ LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
 # Make zip
 UseDtb=y
+UseDtbo=y
 BASE_DTB_NAME="sm8150-v2"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
-cp -r "$KERNEL_DTBO" "$AK3_DIR"/
+
+if [[ "$UseDtbo" == "y" ]]
+    cp -r "$KERNEL_DTBO" "$AK3_DIR"/
+fi
 
 if [[ "$UseDtb" == "y" ]];then
         ( find "$KERNEL_DTB" -name "*.dtb" -exec cat {} + > $AK3_DIR/dtb )
         [[ ! -e "$AK3_DIR/dtb" ]] && [[ ! -z "$BASE_DTB_NAME" ]] && cp $KERNEL_DTB/$BASE_DTB_NAME $AK3_DIR/dtb
-    fi
+fi
 
 cd "$AK3_DIR" || exit
 
