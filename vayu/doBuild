@@ -83,7 +83,7 @@ elif [[ "$TC" == "gcc" ]]; then
 fi
 
 # Setup kernel version
-VERSION=Ruka
+VERSION=Yuzuki
 if [[ "$TYPE" == "Nightly" ]]; then
     export LOCALVERSION=$VERSION-$TYPE
 else
