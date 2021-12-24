@@ -6,14 +6,24 @@
 apt-get install cpio libtinfo5
 
 # Cloning kernel resource
-if [[ "$*" =~ "beta" ]]; then
+if [[ "$*" =~ "beta-private" ]]; then
   TYPE=Nightly
   git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b stg-test kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
-elif [[ "$*" =~ "stable" ]]; then
+elif [[ "$*" =~ "stable-private" ]]; then
   TYPE=Stable
   git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b stg kernel
+  DEFCONFIG=vayu_defconfig
+  cd kernel || exit
+elif [[ "$*" =~ "beta" ]]; then
+  TYPE=Nightly
+  git clone --depth=1 https://github.com/XSans02/vayu -b 11-test kernel
+  DEFCONFIG=vayu_defconfig
+  cd kernel || exit
+elif [[ "$*" =~ "stable" ]]; then
+  TYPE=Stable
+  git clone --depth=1 https://github.com/XSans02/vayu -b 11 kernel
   DEFCONFIG=vayu_defconfig
   cd kernel || exit
 fi
