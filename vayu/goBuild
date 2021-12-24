@@ -1,0 +1,246 @@
+#!/usr/bin/env bash
+# Copyright ©2021 - 2022 XSans02
+# Docker Kernel Build Script
+
+# Installing some dep
+apt-get install cpio libtinfo5
+
+# Cloning kernel resource
+if [[ "$*" =~ "beta" ]]; then
+  TYPE=Nightly
+  git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b stg-test kernel
+  DEFCONFIG=vayu_defconfig
+  cd kernel || exit
+elif [[ "$*" =~ "stable" ]]; then
+  TYPE=Stable
+  git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b stg kernel
+  DEFCONFIG=vayu_defconfig
+  cd kernel || exit
+fi
+
+# Cloning toolchains resource
+if [[ "$*" =~ "aosp" ]]; then
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang # Clang 13.0.3
+  TC=clang
+elif [[ "$*" =~ "proton" ]]; then
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
+  TC=proton
+elif [[ "$*" =~ "clang14" ]]; then
+  git clone --depth=1 https://github.com/XSans02/XSansTC clang # Clang 14.0.0
+  TC=clang
+elif [[ "$*" =~ "clang14-llvm" ]]; then
+  git clone --depth=1 https://github.com/XSans02/XSansTC clang # Clang 14.0.0 with full llvm
+  TC=clang-llvm
+elif [[ "$*" =~ "gcc10" ]]; then
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
+  TC=gcc
+elif [[ "$*" =~ "gcc12" ]]; then
+  git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64 # GCC 12
+  git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32 # GCC 12
+  TC=gcc
+fi
+
+git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
+git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
+
+# Setup Environtment
+KERNEL_DIR=$PWD
+KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
+KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
+KERNEL_DTB=$KERNEL_DIR/out/arch/arm64/boot/dts/qcom
+DEVICE=vayu
+KBUILD_BUILD_USER="XSansツ"
+KBUILD_BUILD_HOST="Mulung-Server"
+AK3_DIR=$KERNEL_DIR/ak3/
+export TZ="Asia/Jakarta"
+ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
+ZIP_DATE2=$(date +"%H%M")
+SOURCE="$(git rev-parse --abbrev-ref HEAD)"
+COMMIT=$(git log --pretty=format:'%s' -1)
+
+# Kernel Version
+VERSION=Yuzuki
+ZIP_NAME=NTR-$VERSION
+
+# Path setup
+if [[ "$TC" == "clang" ]]; then
+  # Kernel & Clang Setup
+  CLANG_DIR="$KERNEL_DIR/clang"
+  export PATH="$KERNEL_DIR/clang/bin:$PATH"
+  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+elif [[ "$TC" == "clang-llvm" ]]; then
+  # Kernel & Clang Setup
+  CLANG_DIR="$KERNEL_DIR/clang"
+  PrefixDir="${CLANG_DIR}/bin/"
+  export PATH="$KERNEL_DIR/clang/bin:$PATH"
+  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+elif [[ "$TC" == "proton" ]]; then
+  # Kernel & Proton Setup
+  CLANG_DIR="$KERNEL_DIR/clang"
+  export PATH="$KERNEL_DIR/clang/bin:$PATH"
+  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+elif [[ "$TC" == "gcc" ]]; then
+  # Kernel & GCC setup
+  GCC_DIR="$KERNEL_DIR"/arm64
+  export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
+  export KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
+fi
+
+# Setup kernel version
+if [[ "$TYPE" == "Nightly" ]]; then
+    export LOCALVERSION=$VERSION-$TYPE
+else
+    export LOCALVERSION=$VERSION
+fi
+
+export ZIP_DATE
+export ZIP_DATE2
+export SOURCE
+export ARCH=arm64
+export SUBARCH=arm64
+export KBUILD_BUILD_USER
+export KBUILD_BUILD_HOST
+
+# Telegram
+TELEGRAM=Telegram/telegram
+sendInfo() {
+  "${TELEGRAM}" -c "${CHANNEL_ID}" -H -D \
+      "$(
+          for POST in "${@}"; do
+              echo "${POST}"
+          done
+      )"
+}
+
+sendKernel() {
+  "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
+  -c "${CHANNEL_ID}" -H \
+      "| <code>Device: $DEVICE</code> | <code>Md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> | <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code> |"
+}
+
+sendInfo  "<b>*******************************************</b>" \
+          "<b>Start Building :</b> <code>NTR Kernel</code>" \
+          "<b>Version : </b><code>$VERSION</code>" \
+          "<b>Device : </b><code>$DEVICE</code>" \
+          "<b>Status : </b><code>$TYPE</code>" \
+          "<b>Source Branch :</b> <code>$SOURCE</code>" \
+          "<b>Last Commit :</b> <code>$COMMIT</code>" \
+          "<b>*******************************************</b>"
+
+# Start Count
+BUILD_START=$(date +"%s")
+
+if [[ "$TC" == "proton" ]]; then
+    make O=out ARCH=arm64 "$DEFCONFIG"
+    make -j$(nproc --all) O=out \
+                    ARCH=arm64 \
+                    SUBARCH=arm64 \
+                    LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
+                    CC=clang \
+                    AR=llvm-ar \
+                    NM=llvm-nm \
+                    OBJCOPY=llvm-objcopy \
+                    OBJDUMP=llvm-objdump \
+                    STRIP=llvm-strip \
+                    LD=ld.lld \
+                    CLANG_TRIPLE=aarch64-linux-gnu- \
+                    CROSS_COMPILE=aarch64-linux-gnu- \
+                    CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+elif [[ "$TC" == "clang" ]]; then
+    make O=out ARCH=arm64 "$DEFCONFIG"
+    make -j$(nproc --all) O=out \
+                ARCH=arm64 \
+                SUBARCH=arm64 \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                AS=llvm-as \
+                NM=llvm-nm \
+                CXX=clang++ \
+                AR=llvm-ar \
+                LD=ld.lld \
+                STRIP=llvm-strip \
+                OBJCOPY=llvm-objcopy \
+                OBJDUMP=llvm-objdump \
+                OBJSIZE=llvm-size \
+                READELF=llvm-readelf \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+elif [[ "$TC" == "clang-llvm" ]]; then
+    make O=out ARCH=arm64 "$DEFCONFIG"
+    make -j$(nproc --all) O=out \
+                ARCH=arm64 \
+                SUBARCH=arm64 \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                LD=${PrefixDir}ld.lld \
+                AR=${PrefixDir}llvm-ar \
+                NM=${PrefixDir}llvm-nm \
+                AS=${PrefixDir}llvm-as \
+                STRIP=${PrefixDir}llvm-strip \
+                OBJCOPY=${PrefixDir}llvm-objcopy \
+                OBJDUMP=${PrefixDir}llvm-objdump \
+                READELF=${PrefixDir}llvm-readelf \
+                HOSTAR=${PrefixDir}llvm-ar \
+                HOSTAS=${PrefixDir}llvm-as \
+                HOSTLD=${PrefixDir}ld.lld
+elif [[ "$TC" == "gcc" ]]; then
+    make O=out ARCH=arm64 "$DEFCONFIG"
+    make -j$(nproc --all) O=out \
+                ARCH=arm64 \
+                SUBARCH=arm64 \
+                CROSS_COMPILE_ARM32=arm-eabi- \
+                CROSS_COMPILE=aarch64-elf- \
+                LD=aarch64-elf-ld.lld \
+                AR=llvm-ar \
+                NM=llvm-nm \
+                OBJCOPY=llvm-objcopy
+fi
+
+# If build error
+if ! [ -a "$KERNEL_IMG" ]; then
+  sendInfo "<b>Failed building kernel for <code>$DEVICE</code> Please fix it...!</b>"
+  exit 1
+fi
+
+# End Count and Calculate Total Build Time
+BUILD_END=$(date +"%s")
+DIFF=$(( BUILD_END - BUILD_START ))
+
+# Linux version
+LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
+
+# Make zip
+UseDtb=y
+UseDtbo=y
+BASE_DTB_NAME="sm8150-v2"
+
+cp -r "$KERNEL_IMG" "$AK3_DIR"/
+
+if [[ "$UseDtbo" == "y" ]]; then
+    cp -r "$KERNEL_DTBO" "$AK3_DIR"/
+fi
+
+if [[ "$UseDtb" == "y" ]]; then
+        ( find "$KERNEL_DTB" -name "*.dtb" -exec cat {} + > $AK3_DIR/dtb )
+        [[ ! -e "$AK3_DIR/dtb" ]] && [[ ! -z "$BASE_DTB_NAME" ]] && cp $KERNEL_DTB/$BASE_DTB_NAME $AK3_DIR/dtb
+fi
+
+cd "$AK3_DIR" || exit
+
+# Making zip
+zip -r9 ["$ZIP_DATE2"]["$DEVICE"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE".zip ./*
+
+cd "$KERNEL_DIR" || exit
+
+sendKernel
+sendInfo  "<b>*******************************************</b>" \
+          "<b>Success Building :</b> <code>NTR Kernel</code>" \
+          "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
+          "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
+          "<b>Compiler :</b> <code>$KBUILD_COMPILER_STRING</code>" \
+          "<b>*******************************************</b>"
