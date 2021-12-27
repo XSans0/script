@@ -61,7 +61,6 @@ COMMIT=$(git log --pretty=format:'%s' -1)
 
 # Kernel Version
 VERSION=Sayu
-ZIP_NAME=WeebKernel-$VERSION
 K_NAME="Weeabo Kernel"
 
 # Path setup
@@ -88,11 +87,13 @@ elif [[ "$TC" == "gcc" ]]; then
   export KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
 fi
 
-# Setup kernel version
+# Setup kernel version & zip name
 if [[ "$TYPE" == "Nightly" ]]; then
     export LOCALVERSION=$TYPE
+           ZIP_NAME=WeebKernel-$TYPE
 else
     export LOCALVERSION=$VERSION
+           ZIP_NAME=WeebKernel-$VERSION
 fi
 
 export ZIP_DATE
