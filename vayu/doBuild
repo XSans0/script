@@ -60,7 +60,7 @@ SOURCE="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT=$(git log --pretty=format:'%s' -1)
 
 # Kernel Version
-VERSION=Sayu
+CODENAME=Yui
 K_NAME="Weeabo Kernel"
 
 # Path setup
@@ -90,10 +90,10 @@ fi
 # Setup kernel version & zip name
 if [[ "$TYPE" == "Nightly" ]]; then
     export LOCALVERSION=$TYPE
-           ZIP_NAME=WeebKernel-$TYPE
+           ZIP_NAME=Weeb-$TYPE
 else
-    export LOCALVERSION=$VERSION
-           ZIP_NAME=WeebKernel-$VERSION
+    export LOCALVERSION=$CODENAME
+           ZIP_NAME=Weeb-$CODENAME
 fi
 
 export ZIP_DATE
@@ -125,6 +125,7 @@ sendInfo  "<b>*******************************************</b>" \
           "<b>Start Building :</b> <code>$K_NAME</code>" \
           "<b>Device : </b><code>$DEVICE</code>" \
           "<b>Status : </b><code>$TYPE</code>" \
+          "<b>Codename : </b><code>$CODENAME</code>" \
           "<b>Source Branch :</b> <code>$SOURCE</code>" \
           "<b>Last Commit :</b> <code>$COMMIT</code>" \
           "<b>*******************************************</b>"
