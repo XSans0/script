@@ -58,9 +58,6 @@ ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
 ZIP_DATE2=$(date +"%H%M")
 SOURCE="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT=$(git log --pretty=format:'%s' -1)
-
-# Kernel Version
-CODENAME=Yui
 K_NAME="Weeabo Kernel"
 
 # Path setup
