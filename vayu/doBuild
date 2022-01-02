@@ -115,7 +115,7 @@ sendInfo() {
 sendKernel() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
-      "| <code>Device: $DEVICE</code> | <code>Md5: $(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code> | <code>Build Took : $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code> |"
+      "| <b>Changelog: </b>$CL |"
 }
 
 sendInfo  "<b>*******************************************</b>" \
@@ -209,6 +209,7 @@ fi
 # End Count and Calculate Total Build Time
 BUILD_END=$(date +"%s")
 DIFF=$(( BUILD_END - BUILD_START ))
+BUILD_TIME=$(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second
 
 # Linux version
 LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
@@ -239,6 +240,7 @@ cd "$KERNEL_DIR" || exit
 sendKernel
 sendInfo  "<b>*******************************************</b>" \
           "<b>Success Building :</b> <code>$K_NAME</code>" \
+          "<b>Build Took : </b><code>$BUILD_TIME</code>" \
           "<b>Linux Version :</b> <code>$LINUX_VERSION</code>" \
           "<b>Build Date :</b> <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
           "<b>Compiler :</b> <code>$KBUILD_COMPILER_STRING</code>" \
