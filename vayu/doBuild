@@ -115,7 +115,7 @@ sendInfo() {
 sendKernel() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
-      "| <b>Changelog: </b>$CL |"
+      "| <b>Changelog: </b>[Here]($CL) |"
 }
 
 sendInfo  "<b>*******************************************</b>" \
