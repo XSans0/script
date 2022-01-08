@@ -6,8 +6,8 @@
 apt-get install cpio libtinfo5
 
 # Cloning kernel resource
-git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_vayu -b ${K_BRANCH} kernel
-# git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b ${K_BRANCH} kernel
+# git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_vayu -b ${K_BRANCH} kernel
+git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b ${K_BRANCH} kernel
 DEFCONFIG=vayu_defconfig
 cd kernel || exit
 
