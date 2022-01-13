@@ -44,25 +44,25 @@ elif [[ "$*" =~ "gcc12" ]]; then
 fi
 
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
-git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
+git clone --depth=1 https://github.com/XSans02/AnyKernel3 -b vayu ak3
 
 # Setup Environtment
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 KERNEL_DTB=$KERNEL_DIR/out/arch/arm64/boot/dts/qcom
+AK3_DIR=$KERNEL_DIR/ak3/
 DEVICE=vayu
-export ARCH=arm64
-export SUBARCH=arm64
-export KBUILD_BUILD_USER="XSansツ"
-export KBUILD_BUILD_HOST="Mulung-Server"
-export AK3_DIR=$KERNEL_DIR/ak3/
-export TZ="Asia/Jakarta"
-export ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
-export ZIP_DATE2=$(date +"%H%M")
-export SOURCE="$(git rev-parse --abbrev-ref HEAD)"
-COMMIT=$(git log --pretty=format:'%s' -1)
 K_NAME="Weeabo Kernel"
+export ARCH="arm64"
+export SUBARCH="arm64"
+export KBUILD_BUILD_USER="XSansツ"
+export KBUILD_BUILD_HOST="Bukan-Kernel-Gaming"
+export TZ="Asia/Jakarta"
+export ZIP_DATE="$(TZ=Asia/Jakarta date +'%d%m%Y')"
+export ZIP_DATE2="$(date +"%H%M")"
+export SOURCE="$(git rev-parse --abbrev-ref HEAD)"
+export COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Path setup
 if [[ "$TC" == "clang" ]]; then
