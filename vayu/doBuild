@@ -6,7 +6,6 @@
 apt-get install cpio libtinfo5
 
 # Cloning kernel resource
-# git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_vayu -b ${K_BRANCH} kernel
 git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b ${K_BRANCH} kernel
 DEFCONFIG=vayu_defconfig
 cd kernel || exit
@@ -26,10 +25,13 @@ elif [[ "$*" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
   TC=proton
 elif [[ "$*" =~ "clang14" ]]; then
-  git clone --depth=1 https://github.com/XSans02/XSansTC clang # Clang 14.0.0
+  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b release clang # Clang 14.0.0
   TC=clang
 elif [[ "$*" =~ "clang14-llvm" ]]; then
-  git clone --depth=1 https://github.com/XSans02/XSansTC clang # Clang 14.0.0 with full llvm
+  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b release clang # Clang 14.0.0 with full llvm
+  TC=clang-llvm
+elif [[ "$*" =~ "clang14b-llvm" ]]; then
+  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b master clang # Beta Clang 14.0.0 with full llvm
   TC=clang-llvm
 elif [[ "$*" =~ "gcc10" ]]; then
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
@@ -41,7 +43,7 @@ elif [[ "$*" =~ "gcc12" ]]; then
   TC=gcc
 fi
 
-git clone --depth=1 https://github.com/XSans02/telegram.sh.git Telegram
+git clone --depth=1 https://github.com/XSans02/Telegram Telegram
 git clone --depth=1 https://github.com/XSans02/AnyKernel3.git -b vayu ak3
 
 # Setup Environtment
@@ -50,13 +52,15 @@ KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
 KERNEL_DTB=$KERNEL_DIR/out/arch/arm64/boot/dts/qcom
 DEVICE=vayu
-KBUILD_BUILD_USER="XSansツ"
-KBUILD_BUILD_HOST="Mulung-Server"
-AK3_DIR=$KERNEL_DIR/ak3/
+export ARCH=arm64
+export SUBARCH=arm64
+export KBUILD_BUILD_USER="XSansツ"
+export KBUILD_BUILD_HOST="Mulung-Server"
+export AK3_DIR=$KERNEL_DIR/ak3/
 export TZ="Asia/Jakarta"
-ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
-ZIP_DATE2=$(date +"%H%M")
-SOURCE="$(git rev-parse --abbrev-ref HEAD)"
+export ZIP_DATE=$(TZ=Asia/Jakarta date +'%d%m%Y')
+export ZIP_DATE2=$(date +"%H%M")
+export SOURCE="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT=$(git log --pretty=format:'%s' -1)
 K_NAME="Weeabo Kernel"
 
@@ -67,7 +71,7 @@ if [[ "$TC" == "clang" ]]; then
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
   export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 elif [[ "$TC" == "clang-llvm" ]]; then
-  # Kernel & Clang Setup
+  # Kernel & Clang-llvm Setup
   CLANG_DIR="$KERNEL_DIR/clang"
   PrefixDir="${CLANG_DIR}/bin/"
   export PATH="$KERNEL_DIR/clang/bin:$PATH"
@@ -92,14 +96,6 @@ else
     export LOCALVERSION=$CODENAME
            ZIP_NAME=Weeb-$CODENAME
 fi
-
-export ZIP_DATE
-export ZIP_DATE2
-export SOURCE
-export ARCH=arm64
-export SUBARCH=arm64
-export KBUILD_BUILD_USER
-export KBUILD_BUILD_HOST
 
 # Telegram
 TELEGRAM=Telegram/telegram
@@ -213,7 +209,7 @@ DIFF=$(( BUILD_END - BUILD_START ))
 # Linux version
 LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
-# Make zip
+# Make zip ( set to 'n' if not used )
 UseDtb=y
 UseDtbo=y
 BASE_DTB_NAME="sm8150-v2"
