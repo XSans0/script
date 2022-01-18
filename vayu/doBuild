@@ -97,12 +97,6 @@ else
            ZIP_NAME=Weeb-$CODENAME
 fi
 
-if [[ "K_BRANCH" =~ "stg-uv" ]]; then
-   ZIP_NAME2=[UV]
-elif [[ "K_BRANCH" =~ "stg-ocuv" ]]; then
-   ZIP_NAME2=[OCUV]
-fi
-
 # Telegram
 TELEGRAM=Telegram/telegram
 sendInfo() {
@@ -233,8 +227,15 @@ fi
 
 cd "$AK3_DIR" || exit
 
-# Making zip
-zip -r9 ["$ZIP_DATE2"]["$DEVICE"]["$TYPE"]"$ZIP_NAME2""$ZIP_NAME"-"$ZIP_DATE".zip ./*
+if [[ "K_BRANCH" =~ "stg-uv" ]]; then
+    ZIP_NAME2=UV
+    zip -r9 ["$ZIP_DATE"]["$DEVICE"]["$TYPE"]"[$ZIP_NAME2]""$ZIP_NAME"-"$ZIP_DATE2".zip ./*
+elif [[ "K_BRANCH" =~ "stg-ocuv" ]]; then
+    ZIP_NAME2=OCUV
+    zip -r9 ["$ZIP_DATE"]["$DEVICE"]["$TYPE"]"[$ZIP_NAME2]""$ZIP_NAME"-"$ZIP_DATE2".zip ./*
+else
+    zip -r9 ["$ZIP_DATE"]["$DEVICE"]["$TYPE"]"$ZIP_NAME2"-"$ZIP_DATE2".zip ./*
+fi
 
 cd "$KERNEL_DIR" || exit
 
