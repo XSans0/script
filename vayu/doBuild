@@ -11,33 +11,33 @@ DEFCONFIG=vayu_defconfig
 cd kernel || exit
 
 # Version
-if [[ "$*" =~ "beta" ]]; then
+if [[ "$1" =~ "beta" ]]; then
   TYPE=Nightly
-elif [[ "$*" =~ "stable" ]]; then
+elif [[ "$1" =~ "stable" ]]; then
   TYPE=Stable
 fi
 
 # Cloning toolchains resource
-if [[ "$*" =~ "aosp" ]]; then
+if [[ "$2" =~ "aosp" ]]; then
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang # Clang 13.0.3
   TC=clang
-elif [[ "$*" =~ "proton" ]]; then
+elif [[ "$2" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
   TC=proton
-elif [[ "$*" =~ "clang14" ]]; then
+elif [[ "$2" =~ "clang14" ]]; then
   git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b release clang # Clang 14.0.0
   TC=clang
-elif [[ "$*" =~ "clang14-llvm" ]]; then
+elif [[ "$2" =~ "clang14-llvm" ]]; then
   git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b release clang # Clang 14.0.0 with full llvm
   TC=clang-llvm
-elif [[ "$*" =~ "clang14b-llvm" ]]; then
+elif [[ "$2" =~ "clang14b-llvm" ]]; then
   git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b master clang # Beta Clang 14.0.0 with full llvm
   TC=clang-llvm
-elif [[ "$*" =~ "gcc10" ]]; then
+elif [[ "$2" =~ "gcc10" ]]; then
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
   TC=gcc
-elif [[ "$*" =~ "gcc12" ]]; then
+elif [[ "$2" =~ "gcc12" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64 # GCC 12
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32 # GCC 12
   TC=gcc
@@ -117,7 +117,7 @@ sendInfo() {
 sendKernel() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
-      "<b>Md5: </b><code>$(md5sum "$AK3_DIR"/*.zip | cut -d' ' -f1)</code>"
+      "<b># ${DEVICE}</b>"
 }
 
 sendInfo  "<b>*******************************************</b>" \
@@ -215,9 +215,9 @@ DIFF=$(( BUILD_END - BUILD_START ))
 # Linux version
 LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
-# Make zip ( set to 'n' if not used )
-UseDtb=y
-UseDtbo=y
+# Make zip
+UseDtb=y  # set to 'n' if not used
+UseDtbo=y # set to 'n' if not used
 BASE_DTB_NAME="sm8150-v2"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
@@ -234,9 +234,9 @@ fi
 cd "$AK3_DIR" || exit
 
 if [[ "$ZIP_NAME2" ]]; then
-    zip -r9 ["$ZIP_DATE"]["$DEVICE"]["$TYPE"]["$ZIP_NAME2"]"$ZIP_NAME"-"$ZIP_DATE2".zip ./*
+    zip -r9 ["$ZIP_DATE"]["$TYPE"]["$ZIP_NAME2"]"$ZIP_NAME"-"$ZIP_DATE2".zip ./*
 else
-    zip -r9 ["$ZIP_DATE"]["$DEVICE"]["$TYPE"]"$ZIP_NAME2"-"$ZIP_DATE2".zip ./*
+    zip -r9 ["$ZIP_DATE"]["$TYPE"]"$ZIP_NAME"-"$ZIP_DATE2".zip ./*
 fi
 
 cd "$KERNEL_DIR" || exit
