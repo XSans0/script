@@ -90,7 +90,7 @@ fi
 
 # Setup kernel version & zip name
 if [[ "$TYPE" == "Nightly" ]]; then
-    export LOCALVERSION=$CODENAME-$TYPE
+    export LOCALVERSION=$TYPE
            ZIP_NAME=Weeb-$CODENAME
 else
     export LOCALVERSION=$CODENAME
