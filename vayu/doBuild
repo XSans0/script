@@ -10,37 +10,30 @@ git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_x
 DEFCONFIG=vayu_defconfig
 cd kernel || exit
 
-# Version
-if [[ "$1" =~ "beta" ]]; then
+# Kernel Version
+# Setup using ENV
+if [[ "${RELEASE}" == "beta" ]]; then
   TYPE=Nightly
-elif [[ "$1" =~ "stable" ]]; then
+else
   TYPE=Stable
 fi
 
 # Cloning toolchains resource
-if [[ "$2" =~ "aosp" ]]; then
+# Setup using ENV
+if [[ "${TC}" =~ "aosp" ]]; then
   git clone --depth=1 https://github.com/XSans02/AOSP-clang clang # AOSP-Clang with latest version
   TC=clang
-elif [[ "$2" =~ "aosp-llvm" ]]; then
-  git clone --depth=1 https://github.com/XSans02/AOSP-clang clang # AOSP-Clang with latest version
-  TC=clang-llvm
-elif [[ "$2" =~ "proton" ]]; then
+elif [[ "${TC}" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
   TC=proton
-elif [[ "$2" =~ "clang14" ]]; then
+elif [[ "${TC}" =~ "clang" ]]; then
   git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b release clang # Clang 14.0.0
   TC=clang
-elif [[ "$2" =~ "clang14-llvm" ]]; then
-  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b release clang # Clang 14.0.0 with full llvm
-  TC=clang-llvm
-elif [[ "$2" =~ "clang14b-llvm" ]]; then
-  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b master clang # Beta Clang 14.0.0 with full llvm
-  TC=clang-llvm
-elif [[ "$2" =~ "gcc10" ]]; then
+elif [[ "${TC}" =~ "gcc10" ]]; then
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
   TC=gcc
-elif [[ "$2" =~ "gcc12" ]]; then
+elif [[ "${TC}" =~ "gcc12" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64 # GCC 12
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32 # GCC 12
   TC=gcc
@@ -49,7 +42,7 @@ fi
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
 git clone --depth=1 https://github.com/XSans02/AnyKernel3 -b vayu ak3
 
-# Setup Environtment
+# Setup
 KERNEL_DIR=$PWD
 KERNEL_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image
 KERNEL_DTBO=$KERNEL_DIR/out/arch/arm64/boot/dtbo.img
@@ -67,31 +60,7 @@ export ZIP_DATE2="$(date +"%H%M")"
 export SOURCE="$(git rev-parse --abbrev-ref HEAD)"
 export COMMIT="$(git log --pretty=format:'%s' -1)"
 
-# Path setup
-if [[ "$TC" == "clang" ]]; then
-  # Kernel & Clang Setup
-  CLANG_DIR="$KERNEL_DIR/clang"
-  export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-elif [[ "$TC" == "clang-llvm" ]]; then
-  # Kernel & Clang-llvm Setup
-  CLANG_DIR="$KERNEL_DIR/clang"
-  PrefixDir="${CLANG_DIR}/bin/"
-  export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-elif [[ "$TC" == "proton" ]]; then
-  # Kernel & Proton Setup
-  CLANG_DIR="$KERNEL_DIR/clang"
-  export PATH="$KERNEL_DIR/clang/bin:$PATH"
-  export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-elif [[ "$TC" == "gcc" ]]; then
-  # Kernel & GCC setup
-  GCC_DIR="$KERNEL_DIR"/arm64
-  export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
-  export KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
-fi
-
-# Setup kernel version & zip name
+# Setup kernel codename & zip name
 if [[ "$TYPE" == "Nightly" ]]; then
     export LOCALVERSION=$TYPE
            ZIP_NAME=Weeb-$CODENAME
@@ -135,7 +104,13 @@ sendInfo  "<b>*******************************************</b>" \
 # Start Count
 BUILD_START=$(date +"%s")
 
-if [[ "$TC" == "proton" ]]; then
+# Compile
+# Setup Using ENV
+if [[ "${COMPILE}" == "clang" ]]; then
+    CLANG_DIR="$KERNEL_DIR/clang"
+    export PATH="$KERNEL_DIR/clang/bin:$PATH"
+    export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
@@ -151,23 +126,12 @@ if [[ "$TC" == "proton" ]]; then
                 CLANG_TRIPLE=aarch64-linux-gnu- \
                 CROSS_COMPILE=aarch64-linux-gnu- \
                 CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-elif [[ "$TC" == "clang" ]]; then
-    make O=out ARCH=arm64 "$DEFCONFIG"
-    make -j$(nproc --all) O=out \
-                ARCH=arm64 \
-                SUBARCH=arm64 \
-                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
-                CC=clang \
-                AR=llvm-ar \
-                NM=llvm-nm \
-                LD=ld.lld \
-                STRIP=llvm-strip \
-                OBJCOPY=llvm-objcopy \
-                OBJDUMP=llvm-objdump \
-                CLANG_TRIPLE=aarch64-linux-gnu- \
-                CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-elif [[ "$TC" == "clang-llvm" ]]; then
+elif [[ "${COMPILE}" == "llvm" ]]; then
+    CLANG_DIR="$KERNEL_DIR/clang"
+    PrefixDir="${CLANG_DIR}/bin/"
+    export PATH="$KERNEL_DIR/clang/bin:$PATH"
+    export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
@@ -188,7 +152,11 @@ elif [[ "$TC" == "clang-llvm" ]]; then
                 HOSTAR=${PrefixDir}llvm-ar \
                 HOSTAS=${PrefixDir}llvm-as \
                 HOSTLD=${PrefixDir}ld.lld
-elif [[ "$TC" == "gcc" ]]; then
+elif [[ "${COMPILE}" == "gcc" ]]; then
+    GCC_DIR="$KERNEL_DIR"/arm64
+    export PATH="$KERNEL_DIR/arm64/bin:$KERNEL_DIR/arm32/bin:$PATH"
+    export KBUILD_COMPILER_STRING="$("$GCC_DIR"/bin/aarch64-elf-gcc --version | head -n 1)"
+
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
