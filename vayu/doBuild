@@ -19,8 +19,11 @@ fi
 
 # Cloning toolchains resource
 if [[ "$2" =~ "aosp" ]]; then
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b aosp-13.0.3 clang # Clang 13.0.3
+  git clone --depth=1 https://github.com/XSans02/AOSP-clang clang # AOSP-Clang with latest version
   TC=clang
+elif [[ "$2" =~ "aosp-llvm" ]]; then
+  git clone --depth=1 https://github.com/XSans02/AOSP-clang clang # AOSP-Clang with latest version
+  TC=clang-llvm
 elif [[ "$2" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
   TC=proton
