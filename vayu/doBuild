@@ -22,21 +22,18 @@ fi
 # Setup using ENV
 if [[ "${TC}" =~ "aosp" ]]; then
   git clone --depth=1 https://github.com/XSans02/AOSP-clang clang # AOSP-Clang with latest version
-  TC=clang
 elif [[ "${TC}" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
-  TC=proton
 elif [[ "${TC}" =~ "clang" ]]; then
-  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b master clang # Clang 14.0.0
-  TC=clang
+  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b master clang # Clang 15.0.0
+elif [[ "${TC}" =~ "clang14" ]]; then
+  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b 14 clang # Clang 14.0.0
 elif [[ "${TC}" =~ "gcc10" ]]; then
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
   git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
-  TC=gcc
 elif [[ "${TC}" =~ "gcc12" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64 # GCC 12
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32 # GCC 12
-  TC=gcc
 fi
 
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
