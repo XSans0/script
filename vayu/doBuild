@@ -96,24 +96,20 @@ send_file() {
       "<b>#${DEVICE}</b>"
 }
 
-send_msg  "<b>==========Building New Kernel==========</b>" \
-          " " \
-          "<b>=======================================</b>" \
-          "<b>Build Status :</b>" \
-          "<code>- $TYPE</code>" \
-          " " \
-          "<b>For Device :</b>" \
-          "<code>- $DEVICE</code>" \
-          " " \
-          "<b>Codename :</b>" \
-          "<code>- $CODENAME</code>" \
-          " " \
-          "<b>Source Branch :</b>" \
+send_msg  "<b>=================================</b>" \
+          "<b>      Building New Kernel        </b>" \
+          "<b>=================================</b>" \
+          "<b>Branch : </b>" \
           "<code>- $BRANCH</code>" \
-          " " \
-          "<b>Last Commit :</b>" \
+          "<b>Codename : </b>" \
+          "<code>- $CODENAME</code>" \
+          "<b>For Device : </b>" \
+          "<code>- $DEVICE</code>" \
+          "<b>Build Status : </b>" \
+          "<code>- $TYPE</code>" \
+          "<b>Last Commit : </b>" \
           "<code>- $COMMIT</code>" \
-          "<b>=======================================</b>"
+          "<b>=================================</b>"
 
 # Start Count
 BUILD_START=$(date +"%s")
@@ -214,21 +210,17 @@ cd "$KERNEL_DIR" || exit
 
 send_file
 
-send_msg  "<b>===========Building Finished===========</b>" \
-          " " \
+send_msg  "<b>=======================================</b>" \
+          "<b>           Building Finished           </b>" \
           "<b>=======================================</b>" \
           "<b>Build Took :</b>" \
           "<code>- $(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>" \
-          " " \
           "<b>Build Date :</b>" \
           "<code>- $(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
-          " " \
           "<b>Linux Version :</b>" \
           "<code>- $LINUX_VERSION</code>" \
-          " " \
           "<b>MD5 :</b>" \
           "<code>$MD5</code> " \
-          " " \
           "<b>Compiler :</b>" \
           "<code>- $KBUILD_COMPILER_STRING</code>" \
           "<b>=======================================</b>"
