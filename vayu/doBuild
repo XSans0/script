@@ -21,6 +21,7 @@ fi
 # Cloning toolchains resource
 # Setup using ENV
 if [[ "${TC}" =~ "aosp" ]]; then
+  mkdir clang
   wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r445002.tar.gz "clang-r445002.tar.gz"
   tar -xf clang-r445002.tar.gz -C $(pwd)/clang
   rm -rf clang-r445002.tar.gz
