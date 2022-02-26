@@ -21,7 +21,9 @@ fi
 # Cloning toolchains resource
 # Setup using ENV
 if [[ "${TC}" =~ "aosp" ]]; then
-  git clone --depth=1 https://github.com/XSans02/AOSP-clang clang # AOSP-Clang with latest version
+  wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r445002.tar.gz "clang-r445002.tar.gz"
+  tar -xf clang-r445002.tar.gz -C $(pwd)/clang
+  rm -rf clang-r445002.tar.gz
 elif [[ "${TC}" =~ "proton" ]]; then
   git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
 elif [[ "${TC}" =~ "clang15" ]]; then
