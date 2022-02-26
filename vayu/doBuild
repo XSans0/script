@@ -18,6 +18,14 @@ else
   TYPE=Stable
 fi
 
+# Clone some ingredient for azure
+if [[ "${TC}" == "azure" ]]; then
+  HOME=$(pwd)
+  curl -fsSL "https://repo.archlinuxcn.org/x86_64/glibc-linux4-2.33-4-x86_64.pkg.tar.zst" | bsdtar -C / -xvf - &>/dev/null
+  pacman -Syu --needed --noconfirm wget base-devel xmlto inetutils bc bison cpio git zip python2 &>/dev/null
+  cd "$HOME"
+fi
+
 # Cloning toolchains resource
 # Setup using ENV
 if [[ "${TC}" =~ "aosp" ]]; then
@@ -25,18 +33,20 @@ if [[ "${TC}" =~ "aosp" ]]; then
   wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r445002.tar.gz "clang-r445002.tar.gz"
   tar -xf clang-r445002.tar.gz -C $(pwd)/clang
   rm -rf clang-r445002.tar.gz
+elif [[ "${TC}" =~ "azure" ]]; then
+  git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang clang
 elif [[ "${TC}" =~ "proton" ]]; then
-  git clone --depth=1 https://github.com/kdrag0n/proton-clang clang # Clang 13.0.0
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
 elif [[ "${TC}" =~ "clang15" ]]; then
-  git clone --depth=1 https://github.com/XSans02/Weeb-Clang clang # Clang 15.0.0
+  git clone --depth=1 https://github.com/XSans02/Weeb-Clang clang
 elif [[ "${TC}" =~ "clang14" ]]; then
-  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b 14 clang # Clang 14.0.0
+  git clone --depth=1 https://github.com/XSans02/XSansTC-Clang -b 14 clang
 elif [[ "${TC}" =~ "gcc10" ]]; then
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64 # GCC 10
-  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32 # GCC 10
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc64 arm64
+  git clone --depth=1 https://github.com/sohamxda7/llvm-stable -b gcc32 arm32
 elif [[ "${TC}" =~ "gcc12" ]]; then
-  git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64 # GCC 12
-  git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32 # GCC 12
+  git clone --depth=1 https://github.com/mvaisakh/gcc-arm64 -b gcc-master arm64
+  git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
 fi
 
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
