@@ -114,6 +114,7 @@ send_file() {
 
 send_msg "
 <b>Building New Kernel ...</b>
+<code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>
 <b>======================================</b>
 <b>Device : </b><code>$DEVICE</code>
 <b>Status : </b><code>$TYPE</code>
@@ -223,7 +224,10 @@ cd "$KERNEL_DIR" || exit
 
 send_file "$AK3_DIR/$ZIP_NAME3" "
 <b>#$DEVICE</b>
-<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>"
+<b>======================================</b>
+<b>Linux Version : </b> <code>$LINUX_VERSION</code>
+<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>
+<b>======================================</b>"
 
 send_msg "
 <b>Building Finished!</b>
@@ -231,6 +235,5 @@ send_msg "
 <b>======================================</b>
 <b>Build Took : </b><code>$(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>
 <b>Build Using :</b> <code>$CPU $CORES thread</code>
-<b>Linux Version : </b> <code>$LINUX_VERSION</code>
 <b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>
 <b>======================================</b>"
