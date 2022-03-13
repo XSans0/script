@@ -224,10 +224,10 @@ cd "$KERNEL_DIR" || exit
 
 send_file "$AK3_DIR/$ZIP_NAME3" "
 <b>#$DEVICE</b>
-<b>======================================</b>
+<b>============================</b>
 <b>Linux Version : </b> <code>$LINUX_VERSION</code>
 <b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>
-<b>======================================</b>"
+<b>============================</b>"
 
 send_msg "
 <b>Building Finished!</b>
