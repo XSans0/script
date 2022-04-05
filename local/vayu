@@ -34,6 +34,7 @@ export ZIP_DATE2="$(TZ=Asia/Jakarta date +"%H%M")"
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="XSansツ"
+export KBUILD_BUILD_HOST="Wibu-Server"
 export KBUILD_COMPILER_STRING
 
 # Telegram Setup
