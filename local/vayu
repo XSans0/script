@@ -69,10 +69,11 @@ while true; do
     echo -e " ║ 5. Copy dtbo to Flashable Dir                                   ║"
     echo -e " ║ 6. Copy dtb to Flashable Dir                                    ║"
     echo -e " ║ 7. Make Zip                                                     ║"
-    echo -e " ║ 8. Send Kernel                                                  ║"
+    echo -e " ║ 8. Upload to Telegram                                           ║"
+    echo -e " ║ 9. Upload to Gdrive                                             ║"
     echo -e " ║ e. Back Main Menu                                               ║"
     echo -e " ╚═════════════════════════════════════════════════════════════════╝"
-    echo -ne "\n Enter your choice 1-8, or press 'e' for back to Main Menu : " "$ENDCOLOR"
+    echo -ne "\n Enter your choice 1-9, or press 'e' for back to Main Menu : " "$ENDCOLOR"
 
     read -r menu
 
@@ -174,18 +175,28 @@ while true; do
         echo -e "$GREEN" "\n (i) Done Zipping Kernel" "$ENDCOLOR"
     fi
 
-    # Send Kernel
+    # Upload Telegram
     if [[ "$menu" == "8" ]]; then
         send_file "$AK3_DIR/$ZIP_NAME"
         send_file "out/log.txt"
 
-	cd "$AK3_DIR" || exit
-	rm -rf Image dtb.img dtbo.img *.zip
-	cd "$KERNEL_DIR" || exit
+        echo -e ""
+	    echo -e "$GREEN" "\n (i) Done Send Kernel to Telegram" "$ENDCOLOR"
+        send_msg "<b>Build Successfully</b>%0A<b>==================================</b>%0A<b>Build Date : </b><code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>%0A<b>Build Took : </b><code>$(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>%0A<b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>==================================</b>"
+    fi
 
-    echo -e ""
-	echo -e "$GREEN" "\n (i) Done Send Kernel To Channel" "$ENDCOLOR"
-    send_msg "<b>Build Successfully</b>%0A<b>==================================</b>%0A<b>Build Date : </b><code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>%0A<b>Build Took : </b><code>$(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>%0A<b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>==================================</b>"
+    # Upload Gdrive
+    if [[ "$menu" == "9" ]]; then
+        if [[ -d "/usr/sbin/gdrive" ]]; then
+            gdrive upload "$AK3_DIR/$ZIP_NAME"
+            send_file "out/log.txt"
+
+            echo -e ""
+	        echo -e "$GREEN" "\n (i) Done Send Kernel to Gdrive" "$ENDCOLOR"
+            send_msg "<b>Build Successfully</b>%0A<b>==================================</b>%0A<b>Build Date : </b><code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>%0A<b>Build Took : </b><code>$(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>%0A<b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>==================================</b>"
+        else
+            echo -e "$RED" "Please setup your gdrive first!" "$NOCOLOR"
+        fi
     fi
 
     # Exit
