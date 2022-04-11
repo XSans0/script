@@ -38,24 +38,27 @@ export KBUILD_BUILD_HOST="Wibu-Server"
 export KBUILD_COMPILER_STRING
 
 # Telegram Setup
+git clone --depth=1 https://github.com/XSans02/Telegram Telegram
+
+TELEGRAM=Telegram/telegram
 send_msg() {
-    curl -s -X POST \
-        https://api.telegram.org/bot"{$BOT_TOKEN}"/sendMessage \
-        -d chat_id="${CH_ID}" \
-        -d text="$1" \
-        -d "parse_mode=html" \
-        -d "disable_web_page_preview=true"
+  "${TELEGRAM}" -c "${CHANNEL_ID}" -H -D \
+      "$(
+          for POST in "${@}"; do
+              echo "${POST}"
+          done
+      )"
 }
 
 send_file() {
-    curl -s -X POST \
-        https://api.telegram.org/bot"{$BOT_TOKEN}"/sendDocument \
-        -F chat_id="${CH_ID}" \
-        -F document=@"$1" \
-        -F caption="$2" \
-        -F "parse_mode=html" \
-        -F "disable_web_page_preview=true"
-}
+  "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
+  -c "${CHANNEL_ID}" -H \
+      "$1"
+
+send_log() {
+  "${TELEGRAM}" -f "$(echo out/log.txt)" \
+  -c "${CHANNEL_ID}" -H \
+      "$1"
 
 # Menu
 while true; do
@@ -91,15 +94,24 @@ while true; do
         CURRENTDATE=$(date +"%A, %d %b %Y, %H:%M:%S")
         echo -e "$GREEN" "\n (i) Start Compile kernel for $CODENAME, started at $CURRENTDATE using $CPU $CORES thread"
         echo -e "\n" "$ENDCOLOR"
-        send_msg "<b>New Kernel On The Way</b>%0A<b>==================================</b>%0A<b>Build Using : </b><code>$CPU $CORES thread</code>%0A<b>Device : </b><code>$CODENAME</code>%0A<b>On Branch : </b><code>$BRANCH</code>%0A<b>Last Commit : </b><code>$COMMIT</code>%0A<b>==================================</b>"
+        send_msg "<b>New Kernel On The Way</b>" \
+                 "<b>==================================</b>" \
+                 "<b>Device : </b>" \
+                 "<code>* $CODENAME</code>" \
+                 "<b>Branch : </b>" \
+                 "<code>* $BRANCH</code>" \
+                 "<b>Build Using : </b>" \
+                 "<code>* $CPU $CORES thread</code>" \
+                 "<b>Last Commit : </b>" \
+                 "<code>* $COMMIT</code>" \
+                 "<b>==================================</b>"
 
         # Run Build
         make -j"$CORES" O=out CC=clang AR=llvm-ar NM=llvm-nm LD=ld.lld OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
 
         if ! [ -a "$KERNEL_IMG" ]; then
             echo -e "$RED" "\n (!) Compile Kernel for $CODENAME failed, See buildlog to fix errors" "$ENDCOLOR"
-            send_msg "<b>Build Failed, See log to fix errors</b>"
-            send_file "out/log.txt"
+            send_log "<b>Build Failed, See log to fix errors</b>"
             exit
         fi
 
@@ -108,6 +120,16 @@ while true; do
         echo -e "$GREEN" "\n (i) Compile Kernel for $CODENAME successfully, Kernel Image in $KERNEL_IMG"
         echo -e " (i) Total time elapsed: $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second."
         echo -e "\n" "$ENDCOLOR"
+
+        send_msg "<b>Build Successfully</b>" \
+                 "<b>==================================</b>" \
+                 "<b>Build Date : </b>" \
+                 "<code>* $(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
+                 "<b>Build Took : </b>" \
+                 "<code>* $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>" \
+                 "<b>Compiler : </b>" \
+                 "<code>* $KBUILD_COMPILER_STRING</code>" \
+                 "<b>==================================</b>"
     fi
 
         # Build With Clang LLVM
@@ -117,15 +139,23 @@ while true; do
         CURRENTDATE=$(date +"%A, %d %b %Y, %H:%M:%S")
         echo -e "$GREEN" "\n (i) Start Compile kernel for $CODENAME, started at $CURRENTDATE using $CPU $CORES thread"
         echo -e "\n" "$ENDCOLOR"
-        send_msg "<b>New Kernel On The Way</b>%0A<b>==================================</b>%0A<b>Build Using : </b><code>$CPU $CORES thread</code>%0A<b>Device : </b><code>$CODENAME</code>%0A<b>On Branch : </b><code>$BRANCH</code>%0A<b>Last Commit : </b><code>$COMMIT</code>%0A<b>==================================</b>"
-
+        send_msg "<b>New Kernel On The Way</b>" \
+                 "<b>==================================</b>" \
+                 "<b>Device : </b>" \
+                 "<code>* $CODENAME</code>" \
+                 "<b>Branch : </b>" \
+                 "<code>* $BRANCH</code>" \
+                 "<b>Build Using : </b>" \
+                 "<code>* $CPU $CORES thread</code>" \
+                 "<b>Last Commit : </b>" \
+                 "<code>* $COMMIT</code>" \
+                 "<b>==================================</b>"
         # Run Build
         make -j"$CORES" O=out CC=clang LD=${PrefixDir}ld.lld AR=${PrefixDir}llvm-ar NM=${PrefixDir}llvm-nm AS=${PrefixDir}llvm-as STRIP=${PrefixDir}llvm-strip OBJCOPY=${PrefixDir}llvm-objcopy OBJDUMP=${PrefixDir}llvm-objdump READELF=${PrefixDir}llvm-readelf HOSTAR=${PrefixDir}llvm-ar HOSTAS=${PrefixDir}llvm-as HOSTLD=${PrefixDir}ld.lld CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
 
         if ! [ -a "$KERNEL_IMG" ]; then
             echo -e "$RED" "\n (!) Compile Kernel for $CODENAME failed, See buildlog to fix errors" "$ENDCOLOR"
-            send_msg "<b>Build Failed, See log to fix errors</b>"
-            send_file "out/log.txt"
+            send_log "<b>Build Failed, See log to fix errors</b>"
             exit
         fi
 
@@ -134,6 +164,16 @@ while true; do
         echo -e "$GREEN" "\n (i) Compile Kernel for $CODENAME successfully, Kernel Image in $KERNEL_IMG"
         echo -e " (i) Total time elapsed: $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second."
         echo -e "\n" "$ENDCOLOR"
+
+        send_msg "<b>Build Successfully</b>" \
+                 "<b>==================================</b>" \
+                 "<b>Build Date : </b>" \
+                 "<code>* $(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
+                 "<b>Build Took : </b>" \
+                 "<code>* $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>" \
+                 "<b>Compiler : </b>" \
+                 "<code>* $KBUILD_COMPILER_STRING</code>" \
+                 "<b>==================================</b>"
     fi
 
     # Move kernel image to flashable dir
@@ -177,23 +217,22 @@ while true; do
 
     # Upload Telegram
     if [[ "$menu" == "8" ]]; then
-        send_file "$AK3_DIR/$ZIP_NAME"
-        send_file "out/log.txt"
+        send_log
+        send_file "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>"
 
-        echo -e ""
-	    echo -e "$GREEN" "\n (i) Done Send Kernel to Telegram" "$ENDCOLOR"
-        send_msg "<b>Build Successfully</b>%0A<b>==================================</b>%0A<b>Build Date : </b><code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>%0A<b>Build Took : </b><code>$(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>%0A<b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>==================================</b>"
+	    echo -e "$GREEN" "\n (i) Done Upload to Telegram" "$ENDCOLOR"
     fi
 
     # Upload Gdrive
     if [[ "$menu" == "9" ]]; then
         if [[ -d "/usr/sbin/gdrive" ]]; then
             gdrive upload "$AK3_DIR/$ZIP_NAME"
-            send_file "out/log.txt"
+            send_log
+            send_msg "<code>$ZIP_NAME </code>" \
+                     "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>" \
+                     "<b>Uploaded to gdrive</b>"
 
-            echo -e ""
-	        echo -e "$GREEN" "\n (i) Done Send Kernel to Gdrive" "$ENDCOLOR"
-            send_msg "<b>Build Successfully</b>%0A<b>==================================</b>%0A<b>Build Date : </b><code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>%0A<b>Build Took : </b><code>$(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>%0A<b>Compiler : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>==================================</b>"
+            echo -e "$GREEN" "\n (i) Done Upload to Gdrive" "$ENDCOLOR"
         else
             echo -e "$RED" "Please setup your gdrive first!" "$NOCOLOR"
         fi
