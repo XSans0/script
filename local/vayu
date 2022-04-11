@@ -54,11 +54,13 @@ send_file() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
       "$1"
+}
 
 send_log() {
   "${TELEGRAM}" -f "$(echo out/log.txt)" \
   -c "${CHANNEL_ID}" -H \
       "$1"
+}
 
 # Menu
 while true; do
@@ -150,6 +152,7 @@ while true; do
                  "<b>Last Commit : </b>" \
                  "<code>* $COMMIT</code>" \
                  "<b>==================================</b>"
+
         # Run Build
         make -j"$CORES" O=out CC=clang LD=${PrefixDir}ld.lld AR=${PrefixDir}llvm-ar NM=${PrefixDir}llvm-nm AS=${PrefixDir}llvm-as STRIP=${PrefixDir}llvm-strip OBJCOPY=${PrefixDir}llvm-objcopy OBJDUMP=${PrefixDir}llvm-objdump READELF=${PrefixDir}llvm-readelf HOSTAR=${PrefixDir}llvm-ar HOSTAS=${PrefixDir}llvm-as HOSTLD=${PrefixDir}ld.lld CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
 
@@ -218,7 +221,7 @@ while true; do
     # Upload Telegram
     if [[ "$menu" == "8" ]]; then
         send_log
-        send_file "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>"
+        send_file "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME" | cut -d' ' -f1)</code>"
 
 	    echo -e "$GREEN" "\n (i) Done Upload to Telegram" "$ENDCOLOR"
     fi
@@ -228,8 +231,8 @@ while true; do
         if [[ -d "/usr/sbin/gdrive" ]]; then
             gdrive upload "$AK3_DIR/$ZIP_NAME"
             send_log
-            send_msg "<code>$ZIP_NAME </code>" \
-                     "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME3" | cut -d' ' -f1)</code>" \
+            send_msg "<code>$ZIP_NAME</code>" \
+                     "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME" | cut -d' ' -f1)</code>" \
                      "<b>Uploaded to gdrive</b>"
 
             echo -e "$GREEN" "\n (i) Done Upload to Gdrive" "$ENDCOLOR"
