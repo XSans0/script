@@ -22,10 +22,22 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Setup Clang
-export PATH="$HOME/clang/bin:$PATH"
 CLANG_DIR="$HOME/clang"
+GCC64_DIR="$HOME/arm64"
+GCC32_DIR="$HOME/arm32"
 PrefixDir="$CLANG_DIR/bin/"
-KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
+if [[ -d "$GCC64_DIR/aarch64-linux-android" ]]; then
+    ARM64=aarch64-linux-android-
+else
+    ARM64=aarch64-linux-gnu-
+fi
+if [[ -d "$GCC32_DIR/arm-linux-androideabi" ]]; then
+    ARM32=arm-linux-androideabi-
+else
+    ARM32=arm-linux-gnueabi-
+fi
+
 
 # Export
 export TZ="Asia/Jakarta"
@@ -35,7 +47,8 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="XSansツ"
 export KBUILD_BUILD_HOST="Wibu-Server"
-export KBUILD_COMPILER_STRING
+export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+export PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
 
 # Telegram Setup
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
@@ -109,7 +122,19 @@ while true; do
                  "<b>==================================</b>"
 
         # Run Build
-        make -j"$CORES" O=out CC=clang AR=llvm-ar NM=llvm-nm LD=ld.lld OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
+        make -j"$CORES" O=out \
+            CC=clang \
+            LD=ld.lld \
+            AR=llvm-ar \
+            NM=llvm-nm \
+            STRIP=llvm-strip \
+            OBJCOPY=llvm-objcopy \
+            OBJDUMP=llvm-objdump \
+            OBJSIZE=llvm-size \
+            READELF=llvm-readelf \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE=${ARM64} \
+            CROSS_COMPILE_ARM32=${ARM32} 2>&1 | tee out/log.txt
 
         if ! [ -a "$KERNEL_IMG" ]; then
             echo -e "$RED" "\n (!) Compile Kernel for $CODENAME failed, See buildlog to fix errors" "$ENDCOLOR"
@@ -154,7 +179,24 @@ while true; do
                  "<b>==================================</b>"
 
         # Run Build
-        make -j"$CORES" O=out CC=clang LD=${PrefixDir}ld.lld AR=${PrefixDir}llvm-ar NM=${PrefixDir}llvm-nm AS=${PrefixDir}llvm-as STRIP=${PrefixDir}llvm-strip OBJCOPY=${PrefixDir}llvm-objcopy OBJDUMP=${PrefixDir}llvm-objdump READELF=${PrefixDir}llvm-readelf HOSTAR=${PrefixDir}llvm-ar HOSTAS=${PrefixDir}llvm-as HOSTLD=${PrefixDir}ld.lld CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
+        make -j"$CORES" O=out \
+            CC=clang \
+            LD=${PrefixDir}ld.lld \
+            AR=${PrefixDir}llvm-ar \
+            NM=${PrefixDir}llvm-nm \
+            STRIP=${PrefixDir}llvm-strip \
+            OBJCOPY=${PrefixDir}llvm-objcopy \
+            OBJDUMP=${PrefixDir}llvm-objdump \
+            OBJSIZE=${PrefixDir}llvm-size \
+            READELF=${PrefixDir}llvm-readelf \
+            HOSTCC=clang \
+            HOSTCXX=clang++ \
+            HOSTAR=${PrefixDir}llvm-ar \
+	        HOSTLD=${PrefixDir}ld.lld \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE=${ARM64} \
+            CROSS_COMPILE_ARM32=${ARM32} \
+            LLVM=1 2>&1 | tee out/log.txt
 
         if ! [ -a "$KERNEL_IMG" ]; then
             echo -e "$RED" "\n (!) Compile Kernel for $CODENAME failed, See buildlog to fix errors" "$ENDCOLOR"
