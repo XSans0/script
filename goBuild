@@ -69,6 +69,12 @@ clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
 # Update Git repository
 git config --global user.name "XSans"
 git config --global user.email "xsans966@gmail.com"
+git config --global http.postBuffer 15728640
+
+function push_repo() {
+# We only run this when running on GitHub Actions
+[[ -z ${GITHUB_ACTIONS:-} ]] && return 0
+
 git clone "https://XSans:$GIT_TOKEN@gitlab.com/XSans02/weebx-clang.git" rel_repo
 pushd rel_repo || exit
 rm -fr ./*
@@ -78,7 +84,10 @@ git commit -asm "Clang: $rel_date Build
 
 LLVM commit: $llvm_commit_url
 Clang Version: $clang_version
-Binutils version: $binutils_ver"
+Binutils version: $binutils_ver
+"
 
 git push -f
 popd || exit
+}
+push_repo
