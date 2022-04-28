@@ -127,6 +127,7 @@ while true; do
             LD=ld.lld \
             AR=llvm-ar \
             NM=llvm-nm \
+            AS=llvm-as \
             STRIP=llvm-strip \
             OBJCOPY=llvm-objcopy \
             OBJDUMP=llvm-objdump \
@@ -184,6 +185,7 @@ while true; do
             LD=${PrefixDir}ld.lld \
             AR=${PrefixDir}llvm-ar \
             NM=${PrefixDir}llvm-nm \
+            AS=${PrefixDir}llvm-as \
             STRIP=${PrefixDir}llvm-strip \
             OBJCOPY=${PrefixDir}llvm-objcopy \
             OBJDUMP=${PrefixDir}llvm-objdump \
