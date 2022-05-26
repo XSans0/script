@@ -11,6 +11,7 @@ err() {
 
 # Clone source
 git clone https://github.com/ClangBuiltLinux/tc-build clang
+mv github-release clang
 cd clang
 
 # Install dependency
@@ -94,7 +95,7 @@ echo "$ClangLink" >> WeebX-Clang-link.txt
 cp ../install/README.md .
 git add .
 git commit -asm "WeebX-Clang: ${TagsDate}"
-git tag ${clang_version}-${TagsDate}-release -sm "WeebX-Clang: ${TagsDate}"
+git tag ${clang_version}-${TagsDate}-release -m "WeebX-Clang-${clang_version}-${TagsDate}"
 git push -f origin main
 git push -f origin ${clang_version}-${TagsDate}-release
 popd || exit
