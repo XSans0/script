@@ -22,38 +22,6 @@ err() {
 # Home directory
 HOME=$(pwd)
 
-# Checking
-msg "* Checking..."
-sleep 1
-if [[ "$GIT_TOKEN" ]]; then
-    msg "(OK) Git Token"
-else
-    err "(X) GIT_TOKEN Not Found"
-    exit
-fi
-sleep 1
-if [[ "$TELEGRAM_TOKEN" ]]; then
-    msg "(OK) Telegram Token"
-else
-    err "(X) TELEGRAM_TOKEN Not Found"
-    exit
-fi
-sleep 1
-if [[ "$CHANNEL_ID" ]]; then
-    msg "(OK) Channel ID"
-else
-    err "(X) CHANNEL_ID Not Found"
-    exit
-fi
-sleep 1
-
-# Remove old files
-msg ""
-msg "* Remove old files..."
-msg ""
-rm -rf kernel
-rm -rf AK3
-
 # Clone Toolchain Source
 if [[ "$1" == "weebx" ]]; then
     msg "* Use WeebX Clang..."
@@ -80,9 +48,42 @@ elif [[ "$1" == "aosp" ]]; then
     git clone --depth=1 https://github.com/XSans02/aarch64-linux-android-4.9 arm64
 fi
 
+# Checking
+msg "* Checking..."
+sleep 1
+if [[ "$GIT_TOKEN" ]]; then
+    msg "(OK) Git Token"
+else
+    err "(X) GIT_TOKEN Not Found"
+    exit
+fi
+sleep 1
+if [[ "$TELEGRAM_TOKEN" ]]; then
+    msg "(OK) Telegram Token"
+else
+    err "(X) TELEGRAM_TOKEN Not Found"
+    exit
+fi
+sleep 1
+if [[ "$CHANNEL_ID" ]]; then
+    msg "(OK) Channel ID"
+else
+    err "(X) CHANNEL_ID Not Found"
+    exit
+fi
+sleep 1
+if [[ -d "$HOME/clang" ]]; then
+    msg "(OK) Clang Already"
+else
+    err "(X) Clang Not Found"
+    exit
+fi
+sleep 1
+
 # Clone Source
 msg ""
 msg "* Clone Kernel/AK3 Source..."
+rm -rf kernel AK3
 git clone --depth=1 -b master https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu kernel
 git clone --depth=1 -b vayu https://github.com/XSans02/AnyKernel3 AK3
 cd kernel || exit
