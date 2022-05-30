@@ -26,8 +26,8 @@ HOME=$(pwd)
 if [[ "$1" == "weebx" ]]; then
     msg "* Use WeebX Clang..."
     rm -rf clang arm64 arm32
-    wget  $(curl https://github.com/XSans02/WeebX-Clang/raw/main/WeebX-Clang-link.txt 2>/dev/null) -O "WeebX-Clang.tar.gz"
-    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz
+    wget https://github.com/XSans02/WeebX-Clang/raw/main/WeebX-Clang-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
+    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
 elif [[ "$1" == "azure" ]]; then
     msg "* Use Azure Clang..."
     rm -rf clang arm64 arm32
