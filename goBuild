@@ -69,9 +69,9 @@ popd || exit
 llvm_commit_url="https://github.com/llvm/llvm-project/commit/$short_llvm_commit"
 binutils_ver="$(ls | grep "^binutils-" | sed "s/binutils-//g")"
 clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
-clang_version2="$(install/bin/clang --version | head -n1)"
 TagsDate="$(date +"%Y%m%d")"
 ZipName="WeebX-Clang-$clang_version-${TagsDate}.tar.gz"
+Tags="WeebX-Clang-$clang_version-${TagsDate}-release"
 ClangLink="https://github.com/XSans02/WeebX-Clang/releases/download/${clang_version}-${TagsDate}-release/${ZipName}"
 
 # Git Config
@@ -81,7 +81,7 @@ git config --global user.email "xsans966@gmail.com"
 pushd $(pwd)/install || exit
 echo "# Quick Info" >> README.md
 echo "* Build Date : $(date +"%Y-%m-%d")" >> README.md
-echo "* Clang Version : $clang_version2" >> README.md
+echo "* Clang Version : $clang_version" >> README.md
 echo "* Binutils Version : $binutils_ver" >> README.md
 echo "* Compiled Based : $llvm_commit_url" >> README.md
 tar -czvf ../"$ZipName" *
@@ -95,9 +95,9 @@ echo "$ClangLink" >> WeebX-Clang-link.txt
 cp ../install/README.md .
 git add .
 git commit -asm "WeebX-Clang: ${TagsDate}"
-git tag ${clang_version}-${TagsDate}-release -m "WeebX-Clang-${clang_version}-${TagsDate}"
+git tag ${Tags} -m "${Tags}"
 git push -f origin main
-git push -f origin ${clang_version}-${TagsDate}-release
+git push -f origin ${Tags}
 popd || exit
 
 chmod +x github-release
@@ -105,8 +105,8 @@ chmod +x github-release
     --security-token "$GIT_TOKEN" \
     --user XSans02 \
     --repo WeebX-Clang \
-    --tag ${clang_version}-${TagsDate}-release \
-    --name "Clang-${clang_version}-${TagsDate}-release" \
+    --tag ${Tags} \
+    --name "${Tags}" \
     --description "$(cat install/README.md)"
 
 fail="n"
@@ -114,7 +114,7 @@ fail="n"
     --security-token "$GIT_TOKEN" \
     --user XSans02 \
     --repo WeebX-Clang \
-    --tag ${clang_version}-${TagsDate}-release \
+    --tag ${Tags} \
     --name "$ZipName" \
     --file "$ZipName" || fail="y"
 
@@ -125,7 +125,7 @@ UploadAgain()
         --security-token "$GIT_TOKEN" \
         --user XSans02 \
         --repo WeebX-Clang \
-        --tag ${clang_version}-${TagsDate}-release \
+        --tag ${Tags} \
         --name "$ZipName" \
         --file "$ZipName")"
     [[ -z "$GetRelease" ]] && fail="n"
@@ -145,7 +145,7 @@ fi
 
 if [ "$fail" == "y" ];then
     pushd $(pwd)/rel_repo || exit
-    git push -d origin ${clang_version}-${TagsDate}-release
+    git push -d origin ${Tags}
     git reset --hard HEAD~1
     git push -f origin main
     popd || exit
