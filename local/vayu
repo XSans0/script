@@ -168,15 +168,13 @@ while true; do
     panel " ║ 1. Export defconfig to Out Dir                                  ║"
     panel " ║ 2. Start Compile With Clang                                     ║"
     panel " ║ 3. Start Compile With Clang LLVM                                ║"
-    panel " ║ 4. Copy Image to Flashable Dir                                  ║"
-    panel " ║ 5. Copy dtbo to Flashable Dir                                   ║"
-    panel " ║ 6. Copy dtb to Flashable Dir                                    ║"
-    panel " ║ 7. Make Zip                                                     ║"
-    panel " ║ 8. Upload to Telegram                                           ║"
-    panel " ║ 9. Upload to Gdrive                                             ║"
+    panel " ║ 4. Copy Image, dtbo, dtb to Flashable Dir                       ║"
+    panel " ║ 5. Make Zip                                                     ║"
+    panel " ║ 6. Upload to Telegram                                           ║"
+    panel " ║ 7. Upload to Gdrive                                             ║"
     panel " ║ e. Back Main Menu                                               ║"
     panel " ╚═════════════════════════════════════════════════════════════════╝"
-    panel2 " Enter your choice 1-9, or press 'e' for back to Main Menu : "
+    panel2 " Enter your choice 1-7, or press 'e' for back to Main Menu : "
 
     read -r menu
 
@@ -313,35 +311,36 @@ while true; do
                  "<b>==================================</b>"
     fi
 
-    # Move kernel image to flashable dir
+    # Copy image, dtbo, dtb to flashable dir
     if [[ "$menu" == "4" ]]; then
-        cp "$KERNEL_IMG" "$AK3_DIR"/
         msg ""
-        msg "(OK) Done moving kernel img to $AK3_DIR"
-        msg ""
-    fi
-
-    # Move dtbo to flashable dir
-    if [ "$menu" == "5" ]; then
-        cp "$KERNEL_DTBO" "$AK3_DIR"/
-
-        msg ""
-        msg "(OK) Done moving dtbo to $AK3_DIR"
-        msg ""
-    fi
-
-    # Move dtb to flashable dir
-    if [ "$menu" == "6" ]; then
+        msg "* Copying Image, dtbo, dtb ..."
+        if [[ -f "$KERNEL_IMG" ]]; then
+            cp "$KERNEL_IMG" "$AK3_DIR"/
+            msg "(OK) Done Copy kernel img to $AK3_DIR"
+        else
+            err "(X) Image Not Found"
+        fi
+        sleep 1
+        if [[ -f "$KERNEL_DTBO" ]]; then
+            cp "$KERNEL_DTBO" "$AK3_DIR"/
+            msg "(OK) Done copy dtbo to $AK3_DIR"
+        else
+            err "(X) dtbo Not Found"
+        fi
+        sleep 1
         if [[ -f $KERNEL_DTB/${BASE_DTB_NAME}.dtb ]]; then
-		cp "$KERNEL_DTB/${BASE_DTB_NAME}.dtb" "$AK3_DIR/dtb.img"
-	fi
-        msg ""
-        msg "(OK) Done moving dtb to $AK3_DIR"
-        msg ""
+		    cp "$KERNEL_DTB/${BASE_DTB_NAME}.dtb" "$AK3_DIR/dtb.img"
+            msg "(OK) Done Copy dtb to $AK3_DIR"
+            msg ""
+        else
+            err "(X) dtb Not Found"
+            err ""
+        fi
     fi
 
     # Make Zip
-    if [[ "$menu" == "7" ]]; then
+    if [[ "$menu" == "5" ]]; then
         cd "$AK3_DIR" || exit
         ZIP_NAME=["$ZIP_DATE"]"$LOCALVERSION"-"$ZIP_DATE2".zip
         zip -r9 "$ZIP_NAME" ./*
@@ -353,7 +352,7 @@ while true; do
     fi
 
     # Upload Telegram
-    if [[ "$menu" == "8" ]]; then
+    if [[ "$menu" == "6" ]]; then
         send_log
         send_file "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME" | cut -d' ' -f1)</code>"
 
@@ -363,7 +362,7 @@ while true; do
     fi
 
     # Upload Gdrive
-    if [[ "$menu" == "9" ]]; then
+    if [[ "$menu" == "7" ]]; then
         if [[ -d "/usr/sbin/gdrive" ]]; then
             gdrive upload "$AK3_DIR/$ZIP_NAME"
             send_log
