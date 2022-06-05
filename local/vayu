@@ -121,7 +121,7 @@ else
 fi
 
 # Export kernel version
-export LOCALVERSION="-WeebX-R1.0"
+export LOCALVERSION="-WeebX-r1.1"
 
 # Export
 export TZ="Asia/Jakarta"
