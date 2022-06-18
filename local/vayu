@@ -160,6 +160,30 @@ send_log() {
   -c "${CHANNEL_ID}" -H \
       "$1"
 }
+start_msg() {
+    send_msg "<b>New Kernel On The Way</b>" \
+                 "<b>==================================</b>" \
+                 "<b>Device : </b>" \
+                 "<code>* $CODENAME</code>" \
+                 "<b>Branch : </b>" \
+                 "<code>* $BRANCH</code>" \
+                 "<b>Build Using : </b>" \
+                 "<code>* $CPU $CORES thread</code>" \
+                 "<b>Last Commit : </b>" \
+                 "<code>* $COMMIT</code>" \
+                 "<b>==================================</b>"
+}
+end_msg() {
+    send_msg "<b>Build Successfully</b>" \
+                 "<b>==================================</b>" \
+                 "<b>Build Date : </b>" \
+                 "<code>* $(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
+                 "<b>Build Took : </b>" \
+                 "<code>* $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>" \
+                 "<b>Compiler : </b>" \
+                 "<code>* $KBUILD_COMPILER_STRING</code>" \
+                 "<b>==================================</b>"
+}
 
 # Menu
 while true; do
@@ -172,10 +196,9 @@ while true; do
     panel " ║ 4. Copy Image, dtbo, dtb to Flashable Dir                       ║"
     panel " ║ 5. Make Zip                                                     ║"
     panel " ║ 6. Upload to Telegram                                           ║"
-    panel " ║ 7. Upload to Gdrive                                             ║"
     panel " ║ e. Back Main Menu                                               ║"
     panel " ╚═════════════════════════════════════════════════════════════════╝"
-    panel2 " Enter your choice 1-7, or press 'e' for back to Main Menu : "
+    panel2 " Enter your choice 1-6, or press 'e' for back to Main Menu : "
 
     read -r menu
 
@@ -193,17 +216,7 @@ while true; do
         START=$(date +"%s")
         msg "(OK) Start Compile kernel for $CODENAME, started at $CURRENTDATE using $CPU $CORES thread"
         msg ""
-        send_msg "<b>New Kernel On The Way</b>" \
-                 "<b>==================================</b>" \
-                 "<b>Device : </b>" \
-                 "<code>* $CODENAME</code>" \
-                 "<b>Branch : </b>" \
-                 "<code>* $BRANCH</code>" \
-                 "<b>Build Using : </b>" \
-                 "<code>* $CPU $CORES thread</code>" \
-                 "<b>Last Commit : </b>" \
-                 "<code>* $COMMIT</code>" \
-                 "<b>==================================</b>"
+        start_msg
 
         # Run Build
         make -j"$CORES" O=out \
@@ -235,16 +248,7 @@ while true; do
         msg "(OK) Compile Kernel for $CODENAME successfully, Kernel Image in $KERNEL_IMG"
         msg "(OK) Total time elapsed: $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second."
         msg ""
-
-        send_msg "<b>Build Successfully</b>" \
-                 "<b>==================================</b>" \
-                 "<b>Build Date : </b>" \
-                 "<code>* $(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
-                 "<b>Build Took : </b>" \
-                 "<code>* $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>" \
-                 "<b>Compiler : </b>" \
-                 "<code>* $KBUILD_COMPILER_STRING</code>" \
-                 "<b>==================================</b>"
+        end_msg
     fi
 
         # Build With Clang LLVM
@@ -253,17 +257,7 @@ while true; do
         START=$(date +"%s")
         msg "(OK) Start Compile kernel for $CODENAME, started at $CURRENTDATE using $CPU $CORES thread"
         msg ""
-        send_msg "<b>New Kernel On The Way</b>" \
-                 "<b>==================================</b>" \
-                 "<b>Device : </b>" \
-                 "<code>* $CODENAME</code>" \
-                 "<b>Branch : </b>" \
-                 "<code>* $BRANCH</code>" \
-                 "<b>Build Using : </b>" \
-                 "<code>* $CPU $CORES thread</code>" \
-                 "<b>Last Commit : </b>" \
-                 "<code>* $COMMIT</code>" \
-                 "<b>==================================</b>"
+        start_msg
 
         # Run Build
         make -j"$CORES" O=out \
@@ -300,16 +294,7 @@ while true; do
         msg "(OK) Compile Kernel for $CODENAME successfully, Kernel Image in $KERNEL_IMG"
         msg "(OK) Total time elapsed: $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second."
         msg ""
-
-        send_msg "<b>Build Successfully</b>" \
-                 "<b>==================================</b>" \
-                 "<b>Build Date : </b>" \
-                 "<code>* $(date +"%A, %d %b %Y, %H:%M:%S")</code>" \
-                 "<b>Build Took : </b>" \
-                 "<code>* $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second.</code>" \
-                 "<b>Compiler : </b>" \
-                 "<code>* $KBUILD_COMPILER_STRING</code>" \
-                 "<b>==================================</b>"
+        end_msg
     fi
 
     # Copy image, dtbo, dtb to flashable dir
@@ -354,31 +339,12 @@ while true; do
 
     # Upload Telegram
     if [[ "$menu" == "6" ]]; then
-        send_log
+        send_log "<b>Build Successfully</b>"
         send_file "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME" | cut -d' ' -f1)</code>"
 
         msg ""
 	    msg "(OK) Done Upload to Telegram"
         msg ""
-    fi
-
-    # Upload Gdrive
-    if [[ "$menu" == "7" ]]; then
-        if [[ -d "/usr/sbin/gdrive" ]]; then
-            gdrive upload "$AK3_DIR/$ZIP_NAME"
-            send_log
-            send_msg "<code>$ZIP_NAME</code>" \
-                     "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME" | cut -d' ' -f1)</code>" \
-                     "<b>Uploaded to gdrive</b>"
-
-            msg ""
-            msg "(OK) Done Upload to Gdrive"
-            msg ""
-        else
-            err ""
-            err "Please setup your gdrive first!"
-            err ""
-        fi
     fi
 
     # Exit
