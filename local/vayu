@@ -37,20 +37,14 @@ elif [[ "$1" == "azure" ]]; then
     msg "* Use Azure Clang..."
     rm -rf clang arm64 arm32
     git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang clang
-elif [[ "$1" == "sdclang" ]]; then
-    msg "* Use SDClang..."
-    rm -rf clang arm64 arm32
-    git clone --depth=1 https://github.com/ZyCromerZ/SDClang clang
-    git clone --depth=1 https://github.com/XSans02/arm-linux-androideabi-4.9 arm32
-    git clone --depth=1 https://github.com/XSans02/aarch64-linux-android-4.9 arm64
 elif [[ "$1" == "aosp" ]]; then
     msg "* Use AOSP Clang..."
     rm -rf clang arm64 arm32
     CVER="r450784e"
     wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-"$CVER".tar.gz
     mkdir clang && tar -xf clang-"$CVER".tar.gz -C clang && rm -rf clang-"$CVER".tar.gz
-    git clone --depth=1 https://github.com/XSans02/arm-linux-androideabi-4.9 arm32
-    git clone --depth=1 https://github.com/XSans02/aarch64-linux-android-4.9 arm64
+    git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
+    git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
 fi
 
 # Checking
@@ -89,8 +83,8 @@ sleep 1
 msg ""
 msg "* Clone Kernel/AK3 Source..."
 rm -rf kernel AK3
-git clone --depth=1 -b master https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu kernel
-git clone --depth=1 -b vayu https://github.com/XSans02/AnyKernel3 AK3
+git clone --depth=1 -b master https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
+git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
 cd kernel || exit
 
 # environtment
