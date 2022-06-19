@@ -20,17 +20,47 @@ bash ci.sh deps
 # Set a directory
 DIR="$(pwd ...)"
 
+# Setup your build
+if [[ "$1" == "latest" ]]; then
+    # This build with latest LLVM's
+    BRANCH="main"
+    TLINK="WeebX-Clang-latest-link.txt"
+    BDATE="latest-build-date.txt"
+elif [[ "$1" == "14" ]]; then
+    # This build with 'release/14.x' LLVM's branch ( Clang 14.x )
+    BRANCH="release/14.x"
+    TLINK="WeebX-Clang-14-link.txt"
+    BDATE="14-build-date.txt"
+elif [[ "$1" == "gr" ]]; then
+    # This Build with Good Revision of latest LLVM's
+    TLINK="WeebX-Clang-gr-link.txt"
+    BDATE="gr-build-date.txt"
+    GRBUILD="y"
+fi
+
 # Build LLVM
-msg "Building LLVM..."
-./build-llvm.py \
-	--clang-vendor "WeebX" \
-	--defines "LLVM_PARALLEL_COMPILE_JOBS=$(nproc) LLVM_PARALLEL_LINK_JOBS=$(nproc) CMAKE_C_FLAGS=-O3 CMAKE_CXX_FLAGS=-O3" \
-	--projects "clang;lld;polly" \
-	--targets "ARM;AArch64;X86" \
-	--shallow-clone \
-	--incremental \
-	--no-ccache \
-	--build-type "Release" 2>&1 | tee log.txt
+if [[ "${GRBUILD}" == "y" ]]; then
+    msg "Building LLVM..."
+    ./build-llvm.py \
+        --clang-vendor "WeebX" \
+        --defines "LLVM_PARALLEL_COMPILE_JOBS=$(nproc) LLVM_PARALLEL_LINK_JOBS=$(nproc) CMAKE_C_FLAGS=-O3 CMAKE_CXX_FLAGS=-O3" \
+        --projects "clang;lld;polly" \
+        --targets "ARM;AArch64;X86" \
+        --use-good-revision \
+        --incremental \
+        --no-ccache
+else
+    msg "Building LLVM..."
+    ./build-llvm.py \
+    	--clang-vendor "WeebX" \
+    	--defines "LLVM_PARALLEL_COMPILE_JOBS=$(nproc) LLVM_PARALLEL_LINK_JOBS=$(nproc) CMAKE_C_FLAGS=-O3 CMAKE_CXX_FLAGS=-O3" \
+    	--projects "clang;lld;polly" \
+    	--targets "ARM;AArch64;X86" \
+    	--shallow-clone \
+    	--incremental \
+    	--no-ccache \
+        --branch "${BRANCH}"
+fi
 
 # Check if the final clang binary exists or not.
 [ ! -f install/bin/clang-1* ] && {
@@ -69,18 +99,18 @@ popd || exit
 llvm_commit_url="https://github.com/llvm/llvm-project/commit/$short_llvm_commit"
 binutils_ver="$(ls | grep "^binutils-" | sed "s/binutils-//g")"
 clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
-TagsDate="$(date +"%Y%m%d")"
+TagsDate="$(TZ=Asia/Jakarta date +"%Y%m%d")"
 ZipName="WeebX-Clang-$clang_version-${TagsDate}.tar.gz"
 Tags="WeebX-Clang-$clang_version-${TagsDate}-release"
-ClangLink="https://github.com/XSans02/WeebX-Clang/releases/download/${Tags}/${ZipName}"
+ClangLink="https://github.com/XSans0/WeebX-Clang/releases/download/${Tags}/${ZipName}"
 
 # Git Config
-git config --global user.name "XSans02"
-git config --global user.email "xsans966@gmail.com"
+git config --global user.name "XSans0"
+git config --global user.email "xsansdroid@gmail.com"
 
 pushd $(pwd)/install || exit
 echo "# Quick Info" >> README.md
-echo "* Build Date : $(date +"%Y-%m-%d")" >> README.md
+echo "* Build Date : $(TZ=Asia/Jakarta date +"%Y-%m-%d")" >> README.md
 echo "* Clang Version : $clang_version" >> README.md
 echo "* Binutils Version : $binutils_ver" >> README.md
 echo "* Compiled Based : $llvm_commit_url" >> README.md
@@ -88,11 +118,10 @@ tar -czvf ../"$ZipName" *
 popd || exit
 
 # Clone Repo
-git clone "https://XSans02:$GIT_TOKEN@github.com/XSans02/WeebX-Clang.git" rel_repo
-pushd $(pwd)/rel_repo || exit
-rm -rf *
-echo "$ClangLink" >> WeebX-Clang-link.txt
-cp ../install/README.md .
+git clone "https://XSans0:$GIT_TOKEN@github.com/XSans0/WeebX-Clang.git" rel_repo
+pushd rel_repo || exit
+echo "${ClangLink}" > "${TLINK}"
+echo "$(TZ=Asia/Jakarta date +"%Y-%m-%d")" > "${BDATE}"
 git add .
 git commit -asm "WeebX-Clang: ${TagsDate}"
 git tag ${Tags} -m "${Tags}"
@@ -103,7 +132,7 @@ popd || exit
 chmod +x github-release
 ./github-release release \
     --security-token "$GIT_TOKEN" \
-    --user XSans02 \
+    --user XSans0 \
     --repo WeebX-Clang \
     --tag ${Tags} \
     --name "${Tags}" \
@@ -112,7 +141,7 @@ chmod +x github-release
 fail="n"
 ./github-release upload \
     --security-token "$GIT_TOKEN" \
-    --user XSans02 \
+    --user XSans0 \
     --repo WeebX-Clang \
     --tag ${Tags} \
     --name "$ZipName" \
@@ -123,7 +152,7 @@ UploadAgain()
 {
     GetRelease="$(./github-release upload \
         --security-token "$GIT_TOKEN" \
-        --user XSans02 \
+        --user XSans0 \
         --repo WeebX-Clang \
         --tag ${Tags} \
         --name "$ZipName" \
