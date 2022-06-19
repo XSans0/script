@@ -35,6 +35,7 @@ elif [[ "$1" == "gr" ]]; then
     # This Build with Good Revision of latest LLVM's
     TLINK="WeebX-Clang-gr-link.txt"
     BDATE="gr-build-date.txt"
+    GRTAG="-GR"
     GRBUILD="y"
 fi
 
@@ -101,7 +102,7 @@ binutils_ver="$(ls | grep "^binutils-" | sed "s/binutils-//g")"
 clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
 TagsDate="$(TZ=Asia/Jakarta date +"%Y%m%d")"
 ZipName="WeebX-Clang-$clang_version-${TagsDate}.tar.gz"
-Tags="WeebX-Clang-$clang_version-${TagsDate}-release"
+Tags="WeebX-Clang-$clang_version"${GRTAG}"-${TagsDate}-release"
 ClangLink="https://github.com/XSans0/WeebX-Clang/releases/download/${Tags}/${ZipName}"
 
 # Git Config
