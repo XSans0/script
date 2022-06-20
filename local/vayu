@@ -24,15 +24,23 @@ HOME=$(pwd)
 
 # Clone Toolchain Source
 if [[ "$1" == "weebx" ]]; then
-    msg "* Use WeebX Clang..."
+    msg "* Use WeebX Clang Latest..."
     rm -rf clang arm64 arm32
-    ### WeebX Clang with latest LLVM
-    # wget https://github.com/XSans02/WeebX-Clang/raw/main/WeebX-Clang-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
-    # mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
-    ###
-    
-    ### WeebX Clang with good revision
-    git clone --depth=1 https://gitlab.com/XSans02/weebx-clang.git clang
+    # WeebX Clang latest
+    wget https://github.com/XSans0/WeebX-Clang/raw/main/WeebX-Clang-latest-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
+    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
+elif [[ "$1" == "weebx-gr" ]]; then
+    msg "* Use WeebX Clang Good Revision..."
+    rm -rf clang arm64 arm32
+    # WeebX Clang Good Revision
+    wget https://github.com/XSans0/WeebX-Clang/raw/main/WeebX-Clang-gr-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
+    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
+elif [[ "$1" == "weebx-14" ]]; then
+    msg "* Use WeebX Clang 14..."
+    rm -rf clang arm64 arm32
+    # WeebX Clang 14
+    wget https://github.com/XSans0/WeebX-Clang/raw/main/WeebX-Clang-14-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
+    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
 elif [[ "$1" == "azure" ]]; then
     msg "* Use Azure Clang..."
     rm -rf clang arm64 arm32
