@@ -91,7 +91,7 @@ sleep 1
 msg ""
 msg "* Clone Kernel/AK3 Source..."
 rm -rf kernel AK3
-git clone --depth=1 -b master https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
+git clone --depth=1 -b 12.1 https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
 git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
 cd kernel || exit
 
@@ -330,7 +330,7 @@ while true; do
     # Make Zip
     if [[ "$menu" == "5" ]]; then
         cd "$AK3_DIR" || exit
-        ZIP_NAME=WeebX-${ZIP_DATE}.zip
+        ZIP_NAME=["$ZIP_DATE"]WeebX-Personal-"$(TZ=Asia/Jakarta date +'%H%M')".zip
         zip -r9 "$ZIP_NAME" ./*
         cd "$KERNEL_DIR" || exit
 
