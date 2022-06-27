@@ -39,8 +39,7 @@ elif [[ "$1" == "weebx-14" ]]; then
     msg "* Use WeebX Clang 14..."
     rm -rf clang arm64 arm32
     # WeebX Clang 14
-    wget https://github.com/XSans0/WeebX-Clang/raw/main/WeebX-Clang-14-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
-    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
+    git clone https://gitlab.com/XSans0/weebx-clang.git clang
 elif [[ "$1" == "azure" ]]; then
     msg "* Use Azure Clang..."
     rm -rf clang arm64 arm32
