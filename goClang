@@ -9,6 +9,12 @@ err() {
     echo -e "\e[1;41m$*\e[0m"
 }
 
+# Cancel if not ready
+if [[ -z "${GIT_TOKEN}" ]] || [[ -z "${1}" ]]; then
+        err "* There is something wrong!"
+        exit
+fi
+
 # Clone tc-build source
 git clone https://github.com/ClangBuiltLinux/tc-build
 cd tc-build
