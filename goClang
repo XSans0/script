@@ -37,6 +37,7 @@ LLVM_START=$(date +"%s")
 	--pgo "kernel-defconfig" \
 	--lto "full" \
 	--shallow-clone \
+	--incremental \
 	--branch "${1}"
 
 # End Count
