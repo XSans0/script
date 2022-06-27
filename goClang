@@ -97,7 +97,7 @@ git config --global user.email "xsansdroid@gmail.com"
 
 # Push to gitlab
 msg "* Push to gitlab"
-git clone "git@gitlab.com:XSans0/weebx-clang.git" rel_repo
+git clone https://XSans0:"${GIT_TOKEN}"@gitlab.com/XSans0/weebx-clang.git rel_repo
 pushd rel_repo || exit
 rm -rf ./*
 cp -r ../install/* .
