@@ -65,8 +65,7 @@ if [[ "${GRBUILD}" == "y" ]]; then
         --projects "clang;lld;polly" \
         --targets "ARM;AArch64;X86" \
         --use-good-revision \
-        --incremental \
-        --no-ccache
+        --incremental
 else
     msg "Building LLVM..."
     ./build-llvm.py \
@@ -76,7 +75,6 @@ else
     	--targets "ARM;AArch64;X86" \
     	--shallow-clone \
     	--incremental \
-    	--no-ccache \
         --branch "${BRANCH}"
 fi
 
