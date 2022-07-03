@@ -1,96 +1,53 @@
 #!/usr/bin/env bash
 # Copyright ©2022 XSans02
-# Kernel Build Script
 
 # Function to show an informational message
-msg() {
+function msg() {
     echo -e "\e[1;32m$*\e[0m"
 }
 
-panel() {
+function panel() {
     echo -e "\e[1;34m$*\e[0m"
 }
 
-panel2() {
+function panel2() {
     echo -ne "\e[1;34m$*\e[0m"
 }
 
-err() {
+function err() {
     echo -e "\e[1;31m$*\e[0m"
 }
 
 # Home directory
 HOME=$(pwd)
 
-# Clone Toolchain Source
-if [[ "$1" == "weebx" ]]; then
-    msg "* Use WeebX Clang Latest..."
-    rm -rf clang arm64 arm32
-    # WeebX Clang latest
-    wget https://github.com/XSans0/WeebX-Clang/raw/main/WeebX-Clang-latest-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
-    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
-elif [[ "$1" == "weebx-gr" ]]; then
-    msg "* Use WeebX Clang Good Revision..."
-    rm -rf clang arm64 arm32
-    # WeebX Clang Good Revision
-    wget https://github.com/XSans0/WeebX-Clang/raw/main/WeebX-Clang-gr-link.txt -O link.txt && wget $(cat link.txt) -O "WeebX-Clang.tar.gz"
-    mkdir clang && tar -xf WeebX-Clang.tar.gz -C clang && rm -rf WeebX-Clang.tar.gz link.txt
-elif [[ "$1" == "weebx-14" ]]; then
-    msg "* Use WeebX Clang 14..."
-    rm -rf clang arm64 arm32
-    # WeebX Clang 14
-    git clone https://gitlab.com/XSans0/weebx-clang.git clang
-elif [[ "$1" == "azure" ]]; then
-    msg "* Use Azure Clang..."
-    rm -rf clang arm64 arm32
-    git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang clang
-elif [[ "$1" == "aosp" ]]; then
-    msg "* Use AOSP Clang..."
-    rm -rf clang arm64 arm32
-    CVER="r450784e"
-    wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-"$CVER".tar.gz
-    mkdir clang && tar -xf clang-"$CVER".tar.gz -C clang && rm -rf clang-"$CVER".tar.gz
-    git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
-    git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
+# Cancel if something is missing
+msg "* Token Checker"
+if [[ -z "${TELEGRAM_TOKEN}" ]] || [[ -z "${CHANNEL_ID}" ]] || [[ -z "${GIT_TOKEN}" ]]; then
+    err "(X) There is something missing!"
+    exit
+else
+    msg "(OK) Everything is okey"
 fi
 
-# Checking
-msg "* Checking..."
-sleep 1
-if [[ "$GIT_TOKEN" ]]; then
-    msg "(OK) Git Token"
+# Clang source checker
+msg ""
+msg "* Clang Checker"
+if [[ -d "${HOME}/clang" ]]; then
+    msg "(OK) $(${HOME}/clang/bin/clang --version | head -n 1) detected."
 else
-    err "(X) GIT_TOKEN Not Found"
-    exit
+    err "(X) Clang not found, please clone first!"
+    msg ""
+    msg "* Load clang source"
+    sleep 10
+    source clang.sh
 fi
-sleep 1
-if [[ "$TELEGRAM_TOKEN" ]]; then
-    msg "(OK) Telegram Token"
-else
-    err "(X) TELEGRAM_TOKEN Not Found"
-    exit
-fi
-sleep 1
-if [[ "$CHANNEL_ID" ]]; then
-    msg "(OK) Channel ID"
-else
-    err "(X) CHANNEL_ID Not Found"
-    exit
-fi
-sleep 1
-if [[ -d "$HOME/clang" ]]; then
-    msg "(OK) Clang Already"
-else
-    err "(X) Clang Not Found"
-    exit
-fi
-sleep 1
 
 # Clone Source
 msg ""
-msg "* Clone Kernel/AK3 Source..."
+msg "* Clone Kernel/AK3 Source"
 rm -rf kernel AK3
-git clone --depth=1 -b 12.1 https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
+git clone --depth=1 -b 12.1/main https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
 git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
 cd kernel || exit
 
@@ -103,7 +60,7 @@ AK3_DIR="$HOME/AK3/"
 BASE_DTB_NAME="sm8150-v2"
 CODENAME="vayu"
 DEFCONFIG="vayu_defconfig"
-CORES=$(grep -c ^processor /proc/cpuinfo)
+CORES=$(nproc --all)
 CPU=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
@@ -114,20 +71,16 @@ GCC64_DIR="$HOME/arm64"
 GCC32_DIR="$HOME/arm32"
 PrefixDir="$CLANG_DIR/bin/"
 
-# Checking toolchain source
-if [[ -d "$GCC64_DIR/aarch64-linux-android" ]]; then
+# Checking toolchain for adapt CROSS_COMPILE & CROSS_COMPILE_ARM32
+if [[ -d "$GCC64_DIR" ]] || [[ -d "$GCC32_DIR" ]]; then
     ARM64=aarch64-linux-android-
-else
-    ARM64=aarch64-linux-gnu-
-fi
-if [[ -d "$GCC32_DIR/arm-linux-androideabi" ]]; then
     ARM32=arm-linux-androideabi-
 else
+    ARM64=aarch64-linux-gnu-
     ARM32=arm-linux-gnueabi-
 fi
 
 # Export
-export TZ="Asia/Jakarta"
 export ZIP_DATE="$(TZ=Asia/Jakarta date +'%Y%m%d')"
 export CURRENTDATE=$(TZ=Asia/Jakarta date +"%A, %d %b %Y, %H:%M:%S")
 export ARCH=arm64
@@ -141,7 +94,7 @@ export PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
 
 TELEGRAM=Telegram/telegram
-send_msg() {
+function send_msg() {
   "${TELEGRAM}" -c "${CHANNEL_ID}" -H -D \
       "$(
           for POST in "${@}"; do
@@ -150,18 +103,18 @@ send_msg() {
       )"
 }
 
-send_file() {
+function send_file() {
   "${TELEGRAM}" -f "$(echo "$AK3_DIR"/*.zip)" \
   -c "${CHANNEL_ID}" -H \
       "$1"
 }
 
-send_log() {
+function send_log() {
   "${TELEGRAM}" -f "$(echo out/log.txt)" \
   -c "${CHANNEL_ID}" -H \
       "$1"
 }
-start_msg() {
+function start_msg() {
     send_msg "<b>New Kernel On The Way</b>" \
                  "<b>==================================</b>" \
                  "<b>Device : </b>" \
@@ -174,7 +127,7 @@ start_msg() {
                  "<code>* $COMMIT</code>" \
                  "<b>==================================</b>"
 }
-end_msg() {
+function end_msg() {
     send_msg "<b>Build Successfully</b>" \
                  "<b>==================================</b>" \
                  "<b>Build Date : </b>" \

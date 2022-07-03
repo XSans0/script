@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Copyright ©2022 XSans02
+
+# Function to show an informational message
+function msg() {
+    echo -e "\e[1;32m$*\e[0m"
+}
+
+function panel() {
+    echo -e "\e[1;34m$*\e[0m"
+}
+
+function panel2() {
+    echo -ne "\e[1;34m$*\e[0m"
+}
+
+function err() {
+    echo -e "\e[1;31m$*\e[0m"
+}
+
+function clear_clang() {
+	rm -rf clang arm64 arm32
+}
+
+# Menu
+while true; do
+    panel ""
+    panel " Clang Menu                                                         "
+    panel " ╔═════════════════════════════════════════════════════════════════╗"
+    panel " ║ 1. Azure Clang 15.x                                             ║"
+    panel " ║ 2. AOSP  Clang 14.x                                             ║"
+    panel " ║ 3. WeebX Clang 14.x                                             ║"
+    panel " ║ 4. Proton Clang 13.x                                            ║"
+    panel " ║ s. Skip Menu                                                    ║"
+    panel " ╚═════════════════════════════════════════════════════════════════╝"
+    panel2 " Enter your choice 1-4, or press 's' for skip this Menu : "
+
+    read -r clang
+
+	# Your choise
+	if [[ "${clang}" == "1" ]]; then
+		msg "* Clone Azure Clang 15.x"
+		clear_clang
+		git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
+	elif [[ "${clang}" == "2" ]]; then
+		msg "* Clone AOSP Clang 14.x"
+		clear_clang
+		AOSP_VER="r450784e"
+    	wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-"${AOSP_VER}".tar.gz -O "aosp-clang.tar.gz"
+    	mkdir clang && tar -xf aosp-clang.tar.gz -C clang && rm -rf aosp-clang.tar.gz
+    	git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
+    	git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
+	elif [[ "${clang}" == "3" ]]; then
+		msg "* Clone WeebX Clang 14.x"
+		clear_clang
+		git clone --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
+	elif [[ "${clang}" == "4" ]]; then
+		msg "* Clone Proton Clang 13.x"
+		clear_clang
+		git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
+	elif [[ "${clang}" == "s" ]]; then
+		# include files
+		msg "* Skip this menu"
+		sleep 10
+		source gobuild.sh
+	fi
+done
