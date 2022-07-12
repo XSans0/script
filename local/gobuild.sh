@@ -23,6 +23,7 @@ HOME=$(pwd)
 
 # Cancel if something is missing
 msg "* Token Checker"
+sleep 3
 if [[ -z "${TELEGRAM_TOKEN}" ]] || [[ -z "${CHANNEL_ID}" ]] || [[ -z "${GIT_TOKEN}" ]]; then
     err "(X) There is something missing!"
     exit
@@ -33,8 +34,32 @@ fi
 # Clang source checker
 msg ""
 msg "* Clang Checker"
-if [[ -d "${HOME}/clang" ]]; then
-    msg "(OK) $(${HOME}/clang/bin/clang --version | head -n 1) detected."
+sleep 3
+if [[ "$(cat toolchain.txt)" == "clang" ]]; then
+    # Toolchain directory
+    CLANG_DIR="$HOME/clang"
+    PrefixDir="$CLANG_DIR/bin/"
+    export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
+    msg "(OK) ${KBUILD_COMPILER_STRING} detected."
+elif [[ "$(cat toolchain.txt)" == "aosp" ]]; then
+    # Toolchain directory
+    CLANG_DIR="$HOME/clang"
+    GCC64_DIR="$HOME/arm64"
+    GCC32_DIR="$HOME/arm32"
+    PrefixDir="$CLANG_DIR/bin/"
+    export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
+    msg "(OK) ${KBUILD_COMPILER_STRING} detected."
+elif [[ "$(cat toolchain.txt)" == "sdclang" ]]; then
+    # Toolchain directory
+    CLANG_DIR="$HOME/clang/compiler"
+    GCC64_DIR="$HOME/arm64"
+    GCC32_DIR="$HOME/arm32"
+    PrefixDir="$CLANG_DIR/bin/"
+    export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+
+    msg "(OK) ${KBUILD_COMPILER_STRING} detected."
 else
     err "(X) Clang not found, please clone first!"
     msg ""
@@ -65,12 +90,6 @@ CPU=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
 
-# Toolchain directory
-CLANG_DIR="$HOME/clang"
-GCC64_DIR="$HOME/arm64"
-GCC32_DIR="$HOME/arm32"
-PrefixDir="$CLANG_DIR/bin/"
-
 # Checking toolchain for adapt CROSS_COMPILE & CROSS_COMPILE_ARM32
 if [[ -d "$GCC64_DIR" ]] || [[ -d "$GCC32_DIR" ]]; then
     ARM64=aarch64-linux-android-
@@ -87,7 +106,6 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="XSansツ"
 export KBUILD_BUILD_HOST="Wibu-Server"
-export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 export PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
 
 # Telegram Setup
