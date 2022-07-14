@@ -99,9 +99,12 @@ else
     ARM32=arm-linux-gnueabi-
 fi
 
-# Export
+# Set default time to WIB
+export TZ="Asia/Jakarta"
 export ZIP_DATE="$(TZ=Asia/Jakarta date +'%Y%m%d')"
-export CURRENTDATE=$(TZ=Asia/Jakarta date +"%A, %d %b %Y, %H:%M:%S")
+export CURRENTDATE="$(TZ=Asia/Jakarta date +"%A, %d %b %Y, %H:%M:%S")"
+
+# Export
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="XSansツ"
