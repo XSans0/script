@@ -39,6 +39,10 @@ if [[ "$(cat toolchain.txt)" == "clang" ]]; then
     # Toolchain directory
     CLANG_DIR="$HOME/clang"
     PrefixDir="$CLANG_DIR/bin/"
+    ARM64="aarch64-linux-gnu-"
+    ARM32="arm-linux-gnueabi-"
+    TRIPLE="aarch64-linux-gnu-"
+    export PATH="$CLANG_DIR/bin:$PATH"
     export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
     msg "(OK) ${KBUILD_COMPILER_STRING} detected."
@@ -48,6 +52,10 @@ elif [[ "$(cat toolchain.txt)" == "aosp" ]]; then
     GCC64_DIR="$HOME/arm64"
     GCC32_DIR="$HOME/arm32"
     PrefixDir="$CLANG_DIR/bin/"
+    ARM64="aarch64-linux-android-"
+    ARM32="arm-linux-androideabi-"
+    TRIPLE="aarch64-linux-gnu-"
+    export PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
     export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
     msg "(OK) ${KBUILD_COMPILER_STRING} detected."
@@ -57,6 +65,10 @@ elif [[ "$(cat toolchain.txt)" == "sdclang" ]]; then
     GCC64_DIR="$HOME/arm64"
     GCC32_DIR="$HOME/arm32"
     PrefixDir="$CLANG_DIR/bin/"
+    ARM64="aarch64-linux-android-"
+    ARM32="arm-linux-androideabi-"
+    TRIPLE="aarch64-linux-gnu-"
+    export PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
     export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
     msg "(OK) ${KBUILD_COMPILER_STRING} detected."
@@ -81,6 +93,7 @@ KERNEL_DIR="$PWD"
 KERNEL_IMG="$KERNEL_DIR/out/arch/arm64/boot/Image"
 KERNEL_DTBO="$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
 KERNEL_DTB="$KERNEL_DIR/out/arch/arm64/boot/dts/qcom/"
+KERNEL_LOG="$KERNEL_DIR/out/log-$(TZ=Asia/Jakarta date +'%Y%m%d').txt"
 AK3_DIR="$HOME/AK3/"
 BASE_DTB_NAME="sm8150-v2"
 CODENAME="vayu"
@@ -89,15 +102,6 @@ CORES=$(nproc --all)
 CPU=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
-
-# Checking toolchain for adapt CROSS_COMPILE & CROSS_COMPILE_ARM32
-if [[ -d "$GCC64_DIR" ]] || [[ -d "$GCC32_DIR" ]]; then
-    ARM64=aarch64-linux-android-
-    ARM32=arm-linux-androideabi-
-else
-    ARM64=aarch64-linux-gnu-
-    ARM32=arm-linux-gnueabi-
-fi
 
 # Set default time to WIB
 export TZ="Asia/Jakarta"
@@ -109,7 +113,6 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="XSansツ"
 export KBUILD_BUILD_HOST="Wibu-Server"
-export PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
 
 # Telegram Setup
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
@@ -131,7 +134,7 @@ function send_file() {
 }
 
 function send_log() {
-  "${TELEGRAM}" -f "$(echo out/log.txt)" \
+  "${TELEGRAM}" -f "$(echo "$KERNEL_LOG")" \
   -c "${CHANNEL_ID}" -H \
       "$1"
 }
@@ -167,13 +170,12 @@ while true; do
     panel " ╔═════════════════════════════════════════════════════════════════╗"
     panel " ║ 1. Export defconfig to Out Dir                                  ║"
     panel " ║ 2. Start Compile With Clang                                     ║"
-    panel " ║ 3. Start Compile With Clang LLVM                                ║"
-    panel " ║ 4. Copy Image, dtbo, dtb to Flashable Dir                       ║"
-    panel " ║ 5. Make Zip                                                     ║"
-    panel " ║ 6. Upload to Telegram                                           ║"
+    panel " ║ 3. Copy Image, dtbo, dtb to Flashable Dir                       ║"
+    panel " ║ 4. Make Zip                                                     ║"
+    panel " ║ 5. Upload to Telegram                                           ║"
     panel " ║ e. Back Main Menu                                               ║"
     panel " ╚═════════════════════════════════════════════════════════════════╝"
-    panel2 " Enter your choice 1-6, or press 'e' for back to Main Menu : "
+    panel2 " Enter your choice 1-5, or press 'e' for back to Main Menu : "
 
     read -r menu
 
@@ -195,65 +197,22 @@ while true; do
 
         # Run Build
         make -j"$CORES" O=out \
-            CC=clang \
-            LD=ld.lld \
-            AR=llvm-ar \
-            NM=llvm-nm \
-            AS=llvm-as \
-            STRIP=llvm-strip \
-            OBJCOPY=llvm-objcopy \
-            OBJDUMP=llvm-objdump \
-            OBJSIZE=llvm-size \
-            READELF=llvm-readelf \
-            CLANG_TRIPLE=aarch64-linux-gnu- \
-            CROSS_COMPILE=${ARM64} \
-            CROSS_COMPILE_ARM32=${ARM32} 2>&1 | tee out/log.txt
-
-        if ! [ -a "$KERNEL_IMG" ]; then
-            err ""
-            err "(X) Compile Kernel for $CODENAME failed, See buildlog to fix errors"
-            err ""
-            send_log "<b>Build Failed, See log to fix errors</b>"
-            exit
-        fi
-
-        END=$(date +"%s")
-        TOTAL_TIME=$(("$END" - "$START"))
-        msg ""
-        msg "(OK) Compile Kernel for $CODENAME successfully, Kernel Image in $KERNEL_IMG"
-        msg "(OK) Total time elapsed: $(("$TOTAL_TIME" / 60)) Minutes, $(("$TOTAL_TIME" % 60)) Second."
-        msg ""
-        end_msg
-    fi
-
-        # Build With Clang LLVM
-    if [[ "$menu" == "3" ]]; then
-        msg ""
-        START=$(date +"%s")
-        msg "(OK) Start Compile kernel for $CODENAME, started at $CURRENTDATE using $CPU $CORES thread"
-        msg ""
-        start_msg
-
-        # Run Build
-        make -j"$CORES" O=out \
-            CC=clang \
+            CC=${PrefixDir}clang \
             LD=${PrefixDir}ld.lld \
             AR=${PrefixDir}llvm-ar \
             NM=${PrefixDir}llvm-nm \
-            AS=${PrefixDir}llvm-as \
+            HOSTCC=${PrefixDir}clang \
+            HOSTCXX=${PrefixDir}clang++ \
             STRIP=${PrefixDir}llvm-strip \
             OBJCOPY=${PrefixDir}llvm-objcopy \
             OBJDUMP=${PrefixDir}llvm-objdump \
-            OBJSIZE=${PrefixDir}llvm-size \
             READELF=${PrefixDir}llvm-readelf \
-            HOSTCC=clang \
-            HOSTCXX=clang++ \
-            HOSTAR=${PrefixDir}llvm-ar \
-	    HOSTLD=${PrefixDir}ld.lld \
-            CLANG_TRIPLE=aarch64-linux-gnu- \
+            OBJSIZE=${PrefixDir}llvm-size \
+            STRIP=${PrefixDir}llvm-strip \
+            CLANG_TRIPLE=${TRIPLE} \
             CROSS_COMPILE=${ARM64} \
-            CROSS_COMPILE_ARM32=${ARM32} \
-            LLVM=1 2>&1 | tee out/log.txt
+            CROSS_COMPILE_COMPAT=${ARM32} \
+            LLVM=1 2>&1 | tee ${KERNEL_LOG}
 
         if ! [ -a "$KERNEL_IMG" ]; then
             err ""
@@ -273,7 +232,7 @@ while true; do
     fi
 
     # Copy image, dtbo, dtb to flashable dir
-    if [[ "$menu" == "4" ]]; then
+    if [[ "$menu" == "3" ]]; then
         msg ""
         msg "* Copying Image, dtbo, dtb ..."
         if [[ -f "$KERNEL_IMG" ]]; then
@@ -301,7 +260,7 @@ while true; do
     fi
 
     # Make Zip
-    if [[ "$menu" == "5" ]]; then
+    if [[ "$menu" == "4" ]]; then
         cd "$AK3_DIR" || exit
         ZIP_NAME=["$ZIP_DATE"]WeebX-Personal-"$(TZ=Asia/Jakarta date +'%H%M')".zip
         zip -r9 "$ZIP_NAME" ./*
@@ -313,7 +272,7 @@ while true; do
     fi
 
     # Upload Telegram
-    if [[ "$menu" == "6" ]]; then
+    if [[ "$menu" == "5" ]]; then
         send_log "<b>Build Successfully</b>"
         send_file "<b>md5 : </b><code>$(md5sum "$AK3_DIR/$ZIP_NAME" | cut -d' ' -f1)</code>"
 
