@@ -84,7 +84,7 @@ fi
 msg ""
 msg "* Clone Kernel/AK3 Source"
 rm -rf kernel AK3
-git clone --depth=1 -b 12.1/main https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
+git clone --depth=1 -b 12.1/next https://"$GIT_TOKEN":x-oauth-basic@github.com/XSans0/kernel_xiaomi_vayu kernel
 git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
 cd kernel || exit
 
