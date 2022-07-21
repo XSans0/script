@@ -48,7 +48,7 @@ while true; do
 		msg "* Clone AOSP Clang 14.x"
 		clear_clang
 		echo "aosp" > toolchain.txt
-		AOSP_VER="r450784e"
+		AOSP_VER="r458507"
     	wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-"${AOSP_VER}".tar.gz -O "aosp-clang.tar.gz"
     	mkdir clang && tar -xf aosp-clang.tar.gz -C clang && rm -rf aosp-clang.tar.gz
     	git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
