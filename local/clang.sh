@@ -28,10 +28,11 @@ while true; do
     panel " Clang Menu                                                         "
     panel " ╔═════════════════════════════════════════════════════════════════╗"
     panel " ║ 1. Azure Clang 15.x                                             ║"
-    panel " ║ 2. AOSP  Clang 14.x                                             ║"
-    panel " ║ 3. WeebX Clang 14.x                                             ║"
-    panel " ║ 4. Snapdragon Clang 14.x                                        ║"
-    panel " ║ 5. Proton Clang 13.x                                            ║"
+    panel " ║ 2. AOSP  Clang 15.x                                             ║"
+    panel " ║ 3. WeebX Clang 15.x                                             ║"
+    panel " ║ 4. WeebX Clang 14.x                                             ║"
+    panel " ║ 5. Snapdragon Clang 14.x                                        ║"
+    panel " ║ 6. Proton Clang 13.x                                            ║"
     panel " ║ s. Skip Menu                                                    ║"
     panel " ╚═════════════════════════════════════════════════════════════════╝"
     panel2 " Enter your choice 1-4, or press 's' for skip this Menu : "
@@ -45,7 +46,7 @@ while true; do
 		echo "clang" > toolchain.txt
 		git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
 	elif [[ "${clang}" == "2" ]]; then
-		msg "* Clone AOSP Clang 14.x"
+		msg "* Clone AOSP Clang 15.x"
 		clear_clang
 		echo "aosp" > toolchain.txt
 		AOSP_VER="r458507"
@@ -54,18 +55,23 @@ while true; do
     	git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
     	git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
 	elif [[ "${clang}" == "3" ]]; then
+		msg "* Clone WeebX Clang 15.x"
+		clear_clang
+		echo "clang" > toolchain.txt
+		git clone -b release/15-gr --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
+	elif [[ "${clang}" == "4" ]]; then
 		msg "* Clone WeebX Clang 14.x"
 		clear_clang
 		echo "clang" > toolchain.txt
 		git clone --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
-	elif [[ "${clang}" == "4" ]]; then
+	elif [[ "${clang}" == "5" ]]; then
 		msg "* Clone Snapdragon Clang 14.x"
 		clear_clang
 		echo "sdclang" > toolchain.txt
 		git clone --depth=1 -b 14 https://github.com/ThankYouMario/proprietary_vendor_qcom_sdclang.git clang
 		git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
     	git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
-	elif [[ "${clang}" == "5" ]]; then
+	elif [[ "${clang}" == "6" ]]; then
 		msg "* Clone Proton Clang 13.x"
 		echo "clang" > toolchain.txt
 		clear_clang
